@@ -1,0 +1,66 @@
+// src/data/musicData.ts
+
+export const musicData: Record<string, Record<string, string>> = {
+  // Notas existentes
+  "C": {
+    "1ª Justa": "C", "2ª menor": "D♭", "2ª maior": "D", "3ª menor": "E♭", "3ª maior": "E", "4ª justa": "F", "4ª aumentada": "F♯", "5ª diminuta": "G♭", "5ª justa": "G", "6ª menor": "A♭", "6ª maior": "A", "7ª menor": "B♭", "7ª maior": "B", "8ª justa": "C",
+  },
+  "C♯": {
+    "1ª Justa": "C♯", "2ª menor": "D", "2ª maior": "D♯", "3ª menor": "E", "3ª maior": "E♯ (F)", "4ª justa": "F♯", "4ª aumentada": "G", "5ª diminuta": "G", "5ª justa": "G♯", "6ª menor": "A", "6ª maior": "A♯", "7ª menor": "B", "7ª maior": "B♯ (C)", "8ª justa": "C♯",
+  },
+  "D": {
+    "1ª Justa": "D", "2ª menor": "E♭", "2ª maior": "E", "3ª menor": "F", "3ª maior": "F♯", "4ª justa": "G", "4ª aumentada": "G♯", "5ª diminuta": "A♭", "5ª justa": "A", "6ª menor": "B♭", "6ª maior": "B", "7ª menor": "C", "7ª maior": "C♯", "8ª justa": "D",
+  },
+  "D♯": {
+    "1ª Justa": "D♯", "2ª menor": "E", "2ª maior": "E♯ (F)", "3ª menor": "F♯", "3ª maior": "G", "4ª justa": "G♯", "4ª aumentada": "A", "5ª diminuta": "A", "5ª justa": "A♯", "6ª menor": "B", "6ª maior": "B♯ (C)", "7ª menor": "C♯", "7ª maior": "D", "8ª justa": "D♯",
+  },
+  "E": {
+    "1ª Justa": "E", "2ª menor": "F", "2ª maior": "F♯", "3ª menor": "G", "3ª maior": "G♯", "4ª justa": "A", "4ª aumentada": "A♯", "5ª diminuta": "B♭", "5ª justa": "B", "6ª menor": "C", "6ª maior": "C♯", "7ª menor": "D", "7ª maior": "D♯", "8ª justa": "E",
+  },
+  "F": {
+    "1ª Justa": "F", "2ª menor": "G♭", "2ª maior": "G", "3ª menor": "A♭", "3ª maior": "A", "4ª justa": "B♭", "4ª aumentada": "B", "5ª diminuta": "C♭", "5ª justa": "C", "6ª menor": "D♭", "6ª maior": "D", "7ª menor": "E♭", "7ª maior": "E", "8ª justa": "F",
+  },
+  "F♯": {
+    "1ª Justa": "F♯", "2ª menor": "G", "2ª maior": "G♯", "3ª menor": "A", "3ª maior": "A♯", "4ª justa": "B", "4ª aumentada": "B♯ (C)", "5ª diminuta": "C", "5ª justa": "C♯", "6ª menor": "D", "6ª maior": "D♯", "7ª menor": "E", "7ª maior": "E♯ (F)", "8ª justa": "F♯",
+  },
+  "G": {
+    "1ª Justa": "G", "2ª menor": "A♭", "2ª maior": "A", "3ª menor": "B♭", "3ª maior": "B", "4ª justa": "C", "4ª aumentada": "C♯", "5ª diminuta": "D♭", "5ª justa": "D", "6ª menor": "E♭", "6ª maior": "E", "7ª menor": "F", "7ª maior": "F♯", "8ª justa": "G",
+  },
+  "G♯": {
+    "1ª Justa": "G♯", "2ª menor": "A", "2ª maior": "A♯", "3ª menor": "B", "3ª maior": "B♯", "4ª justa": "C♯", "4ª aumentada": "D", "5ª diminuta": "D", "5ª justa": "D♯", "6ª menor": "E", "6ª maior": "E♯ (F)", "7ª menor": "F♯", "7ª maior": "G", "8ª justa": "G♯",
+  },
+  "A": {
+    "1ª Justa": "A", "2ª menor": "B♭", "2ª maior": "B", "3ª menor": "C", "3ª maior": "C♯", "4ª justa": "D", "4ª aumentada": "D♯", "5ª diminuta": "E♭", "5ª justa": "E", "6ª menor": "F", "6ª maior": "F♯", "7ª menor": "G", "7ª maior": "G♯", "8ª justa": "A",
+  },
+  "A♯": {
+    "1ª Justa": "A♯", "2ª menor": "B", "2ª maior": "B♯", "3ª menor": "C♯", "3ª maior": "D", "4ª justa": "D♯", "4ª aumentada": "E", "5ª diminuta": "E", "5ª justa": "E♯", "6ª menor": "F♯", "6ª maior": "G", "7ª menor": "G♯", "7ª maior": "A", "8ª justa": "A♯",
+  },
+  "B": {
+    "1ª Justa": "B", "2ª menor": "C", "2ª maior": "C♯", "3ª menor": "D", "3ª maior": "D♯", "4ª justa": "E", "4ª aumentada": "E♯", "5ª diminuta": "F", "5ª justa": "F♯", "6ª menor": "G", "6ª maior": "G♯", "7ª menor": "A", "7ª maior": "A♯", "8ª justa": "B",
+  },
+
+  // === NOVAS NOTAS ADICIONADAS ===
+  "D♭": {
+    "1ª Justa": "D♭", "2ª menor": "E♭♭", "2ª maior": "E♭", "3ª menor": "F♭", "3ª maior": "F", "4ª justa": "G♭", "4ª aumentada": "G", "5ª diminuta": "A♭♭", "5ª justa": "A♭", "6ª menor": "B♭♭", "6ª maior": "B♭", "7ª menor": "C♭", "7ª maior": "C", "8ª justa": "D♭"
+  },
+  "E♭": {
+    "1ª Justa": "E♭", "2ª menor": "F♭", "2ª maior": "F", "3ª menor": "G♭", "3ª maior": "G", "4ª justa": "A♭", "4ª aumentada": "A", "5ª diminuta": "B♭♭", "5ª justa": "B♭", "6ª menor": "C♭", "6ª maior": "C", "7ª menor": "D♭", "7ª maior": "D", "8ª justa": "E♭"
+  },
+  "G♭": {
+    "1ª Justa": "G♭", "2ª menor": "A♭♭", "2ª maior": "A♭", "3ª menor": "B♭♭ ", "3ª maior": "B♭", "4ª justa": "C♭", "4ª aumentada": "C", "5ª diminuta": "D♭♭", "5ª justa": "D♭", "6ª menor": "E♭♭", "6ª maior": "E♭", "7ª menor": "F♭", "7ª maior": "F", "8ª justa": "G♭"
+  },
+  "A♭": {
+    "1ª Justa": "A♭", "2ª menor": "B♭♭", "2ª maior": "B♭", "3ª menor": "C♭", "3ª maior": "C", "4ª justa": "D♭", "4ª aumentada": "D", "5ª diminuta": "E♭♭ (D)", "5ª justa": "E♭", "6ª menor": "F♭", "6ª maior": "F", "7ª menor": "G♭", "7ª maior": "G", "8ª justa": "A♭"
+  },
+  "B♭": {
+    "1ª Justa": "B♭", "2ª menor": "C♭", "2ª maior": "C", "3ª menor": "D♭", "3ª maior": "D", "4ª justa": "E♭", "4ª aumentada": "E", "5ª diminuta": "F♭", "5ª justa": "F", "6ª menor": "G♭", "6ª maior": "G", "7ª menor": "A♭", "7ª maior": "A", "8ª justa": "B♭"
+  }
+};
+
+// Lista ordenada para garantir a ordem correta na caixa de seleção
+export const orderedNotes = [
+  "C", "C♯", "D♭", "D", "D♯", "E♭", "E", "F", "F♯", "G♭", "G", "G♯", "A♭", "A", "A♯", "B♭", "B"
+];
+
+// Exporta a lista de intervalos (são os mesmos para todas as notas)
+export const intervals = Object.keys(musicData["C"]);
