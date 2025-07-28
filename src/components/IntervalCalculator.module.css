@@ -116,3 +116,30 @@
     font-size: 2.1rem;
   }
 }
+/* Adicione esta classe ao seu src/components/IntervalCalculator.module.css */
+
+.backButton {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Ajuste no card para o botão não sobrepor o título */
+.card {
+  position: relative; /* Necessário para o posicionamento absoluto do botão */
+  padding-top: 60px; /* Mais espaço no topo */
+  /* ... mantenha o resto dos estilos do .card ... */
+}

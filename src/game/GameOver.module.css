@@ -1,0 +1,41 @@
+/* src/components/game/GameOver.module.css */
+
+.gameOverContainer {
+  text-align: center;
+  color: white;
+  padding: 20px;
+}
+
+.title {
+  font-size: 3rem;
+  color: #dc3545; /* Vermelho */
+  margin-bottom: 20px;
+}
+
+.scoreText {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.finalScore {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #ffd700; /* Dourado */
+  margin-bottom: 40px;
+}
+
+.restartButton {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff; /* Azul */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.restartButton:hover {
+  transform: scale(1.05);
+}

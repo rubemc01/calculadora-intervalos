@@ -1,0 +1,91 @@
+/* src/game/Menu.module.css */
+
+.menuContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  color: #f0f0f0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.title {
+  font-size: 3.5rem;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  color: #e0e0e0;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Reduzido o gap para caber mais botões */
+  width: 100%;
+  max-width: 400px; /* Aumentado para caber textos maiores */
+}
+
+.btn {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 1.1rem; /* Reduzido para caber mais botões */
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.separator {
+  width: 80%;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 10px auto; /* Reduzido o espaçamento */
+}
+
+/* Estilos existentes */
+.btnTool { background-color: #fd7e14; color: white; border: 2px solid #ffc107; }
+.btnInterval { background-color: #28a745; color: white; }
+.btnNomenclature { background-color: #007bff; color: white; }
+.btnEarEasy { background-color: #17a2b8; color: white; }
+.btnEarMedium { background-color: #ffc107; color: #212529; }
+.btnEarHard { background-color: #6f42c1; color: white; }
+
+/* Novos estilos para os botões de acordes */
+.btnChordEasy { background-color: #e83e8c; color: white; }
+.btnChordMedium { background-color: #6610f2; color: white; }
+.btnChordHard { background-color: #343a40; color: white; border: 1px solid #ffc107; }
+/* Adicione estas classes ao final de src/game/Menu.module.css */
+
+.loadingText {
+  font-size: 1.2rem;
+  color: #ffd700;
+  margin-bottom: 40px;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.btn:disabled {
+  background-color: #6c757d;
+  color: #c0c0c0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
