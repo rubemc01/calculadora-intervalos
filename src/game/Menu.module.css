@@ -19,22 +19,22 @@
 
 .subtitle {
   font-size: 1.2rem;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   color: #e0e0e0;
 }
 
 .buttonContainer {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Reduzido o gap para caber mais botões */
+  gap: 15px;
   width: 100%;
-  max-width: 400px; /* Aumentado para caber textos maiores */
+  max-width: 400px;
 }
 
 .btn {
   width: 100%;
   padding: 15px 20px;
-  font-size: 1.1rem; /* Reduzido para caber mais botões */
+  font-size: 1.1rem;
   font-weight: bold;
   border-radius: 10px;
   border: none;
@@ -52,22 +52,19 @@
   width: 80%;
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  margin: 10px auto; /* Reduzido o espaçamento */
+  margin: 10px auto;
 }
 
-/* Estilos existentes */
+/* Estilos de botões... */
 .btnTool { background-color: #fd7e14; color: white; border: 2px solid #ffc107; }
 .btnInterval { background-color: #28a745; color: white; }
 .btnNomenclature { background-color: #007bff; color: white; }
 .btnEarEasy { background-color: #17a2b8; color: white; }
 .btnEarMedium { background-color: #ffc107; color: #212529; }
 .btnEarHard { background-color: #6f42c1; color: white; }
-
-/* Novos estilos para os botões de acordes */
 .btnChordEasy { background-color: #e83e8c; color: white; }
 .btnChordMedium { background-color: #6610f2; color: white; }
 .btnChordHard { background-color: #343a40; color: white; border: 1px solid #ffc107; }
-/* Adicione estas classes ao final de src/game/Menu.module.css */
 
 .loadingText {
   font-size: 1.2rem;
@@ -82,10 +79,39 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  border: none;
 }
 
 @keyframes pulse {
   0% { opacity: 0.5; }
   50% { opacity: 1; }
   100% { opacity: 0.5; }
+}
+
+/* --- NOVOS ESTILOS PARA VELOCIDADE --- */
+.speedSelector {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 25px;
+  padding: 5px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.speedButton {
+  background: transparent;
+  border: none;
+  color: #a0a0a0;
+  padding: 10px 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.speedButton.active {
+  background-color: #ffd700;
+  color: #111;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }

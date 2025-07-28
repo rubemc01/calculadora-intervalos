@@ -9,7 +9,6 @@ import imagemDeFundo from './assets/fundo-musical.jpg';
 import IntervalCalculator from './components/IntervalCalculator'; 
 import { isPianoReady } from './services/audioService';
 
-// ESTA É A LINHA QUE FOI CORRIGIDA
 export type GameMode = 
   | 'interval' 
   | 'nomenclature' 
@@ -20,6 +19,8 @@ export type GameMode =
   | 'chordMedium' 
   | 'chordHard';
 
+// MUDANÇA AQUI: Adiciona a nova velocidade
+export type GameSpeed = 'beginner' | 'normal' | 'fast'; 
 type AppState = 'menu' | 'playing' | 'gameOver' | 'tool';
 
 function App() {
@@ -27,6 +28,8 @@ function App() {
   const [gameMode, setGameMode] = useState<GameMode>('interval');
   const [finalScore, setFinalScore] = useState(0);
   const [isAudioReady, setIsAudioReady] = useState(false);
+  // MUDANÇA AQUI: A velocidade padrão agora é 'beginner'
+  const [gameSpeed, setGameSpeed] = useState<GameSpeed>('beginner'); 
 
   useEffect(() => {
     const readyCheck = setInterval(() => {
@@ -57,17 +60,21 @@ function App() {
     setAppState('tool');
   };
 
+  const handleSpeedChange = (newSpeed: GameSpeed) => {
+    setGameSpeed(newSpeed);
+  };
+
   const renderAppState = () => {
     switch (appState) {
       case 'playing':
-        return <GameScreen gameMode={gameMode} onGameOver={handleGameOver} onReturnToMenu={handleReturnToMenu} />;
+        return <GameScreen gameMode={gameMode} gameSpeed={gameSpeed} onGameOver={handleGameOver} onReturnToMenu={handleReturnToMenu} />;
       case 'gameOver':
         return <GameOver score={finalScore} gameMode={gameMode} onReturnToMenu={handleReturnToMenu} />;
       case 'tool':
         return <IntervalCalculator onReturnToMenu={handleReturnToMenu} />;
       case 'menu':
       default:
-        return <Menu onStartGame={handleStartGame} onShowTool={handleShowTool} isAudioReady={isAudioReady} />;
+        return <Menu onStartGame={handleStartGame} onShowTool={handleShowTool} isAudioReady={isAudioReady} gameSpeed={gameSpeed} onSpeedChange={handleSpeedChange} />;
     }
   };
 

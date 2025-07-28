@@ -3,17 +3,17 @@
 import React from 'react';
 import styles from './Menu.module.css';
 import { startAudioContext } from '../services/audioService';
-import { GameMode } from '../App';
+import { GameMode, GameSpeed } from '../App';
 
-// A correção está nesta interface, que precisa aceitar 'isAudioReady'
 interface MenuProps {
-  onStartGame: (mode: GameMode) => void;
+  onStartGame: (gameMode: GameMode) => void;
   onShowTool: () => void;
   isAudioReady: boolean;
+  gameSpeed: GameSpeed;
+  onSpeedChange: (speed: GameSpeed) => void;
 }
 
-// E aqui, o componente precisa receber 'isAudioReady'
-const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady }) => {
+const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady, gameSpeed, onSpeedChange }) => {
   
   const handleModeSelection = async (gameMode: GameMode) => {
     try {
@@ -35,7 +35,33 @@ const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady }) =>
         <p className={styles.subtitle}>Escolha um modo de jogo ou use a ferramenta</p>
       )}
       
+      <div className={styles.speedSelector}>
+        {/* NOVO BOTÃO "INICIANTE" */}
+        <button 
+          className={`${styles.speedButton} ${gameSpeed === 'beginner' ? styles.active : ''}`}
+          onClick={() => onSpeedChange('beginner')}
+          disabled={!isAudioReady}
+        >
+          Iniciante
+        </button>
+        <button 
+          className={`${styles.speedButton} ${gameSpeed === 'normal' ? styles.active : ''}`}
+          onClick={() => onSpeedChange('normal')}
+          disabled={!isAudioReady}
+        >
+          Normal
+        </button>
+        <button 
+          className={`${styles.speedButton} ${gameSpeed === 'fast' ? styles.active : ''}`}
+          onClick={() => onSpeedChange('fast')}
+          disabled={!isAudioReady}
+        >
+          Rápido
+        </button>
+      </div>
+
       <div className={styles.buttonContainer}>
+        {/* O resto do menu permanece o mesmo */}
         <button className={`${styles.btn} ${styles.btnTool}`} onClick={onShowTool} disabled={!isAudioReady}>
           Solução do Intervalo
         </button>

@@ -4,23 +4,33 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './GameScreen.module.css';
 import { generateIntervalQuestion, generateNomenclatureQuestion, generateEarTrainingQuestion, generateChordQuestion } from '../services/gameLogic';
 import { playInterval, playNote, playChord } from '../services/audioService';
-import { GameMode } from '../App';
+import { GameMode, GameSpeed } from '../App';
 
 interface GameScreenProps {
   gameMode: GameMode;
+  gameSpeed: GameSpeed;
   onGameOver: (finalScore: number) => void;
   onReturnToMenu: () => void;
 }
 
 type Question = ReturnType<typeof generateIntervalQuestion | typeof generateNomenclatureQuestion | typeof generateEarTrainingQuestion | typeof generateChordQuestion>;
-const TIME_PER_QUESTION = 15;
 
-const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameOver, onReturnToMenu }) => {
+const GameScreen: React.FC<GameScreenProps> = ({ gameMode, gameSpeed, onGameOver, onReturnToMenu }) => {
+  
+  const getTimeForSpeed = (speed: GameSpeed) => {
+    switch (speed) {
+      case 'fast': return 8;
+      case 'normal': return 15;
+      case 'beginner': default: return 25;
+    }
+  };
+  const timePerQuestion = getTimeForSpeed(gameSpeed);
+
   const [question, setQuestion] = useState<Question | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | ''>('');
-  const [timeLeft, setTimeLeft] = useState(TIME_PER_QUESTION);
+  const [timeLeft, setTimeLeft] = useState(timePerQuestion);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -42,10 +52,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameOver, onReturnT
   const nextQuestion = useCallback(() => {
     clearTimer();
     setFeedback('');
-    setTimeLeft(TIME_PER_QUESTION);
+    setTimeLeft(timePerQuestion);
     setSelectedAnswer(null);
     let newQuestion: Question;
-    
     switch (gameMode) {
       case 'interval': newQuestion = generateIntervalQuestion(); break;
       case 'nomenclature': newQuestion = generateNomenclatureQuestion(); break;
@@ -59,18 +68,15 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameOver, onReturnT
     }
     setQuestion(newQuestion);
 
-    // --- CORREÇÃO AQUI ---
-    // Adicionamos a lógica para tocar o som da nova pergunta automaticamente
     if (newQuestion.type === 'interval') {
-      playInterval(newQuestion.questionAudio.startNote, newQuestion.questionAudio.endNote);
+      playInterval(newQuestion.questionAudio.startNote, newQuestion.questionAudio.endNote, gameSpeed);
     } else if (newQuestion.type === 'chord') {
       playChord(newQuestion.questionAudio.notes);
     } else {
       playNote(newQuestion.questionAudio.startNote);
     }
-    // --- FIM DA CORREÇÃO ---
 
-  }, [gameMode, clearTimer]);
+  }, [gameMode, clearTimer, timePerQuestion, gameSpeed]);
 
   const handleAnswer = useCallback((answer: string) => {
     if (feedback) return;
@@ -102,16 +108,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameOver, onReturnT
     return clearTimer;
   }, [feedback, handleWrongAnswer, clearTimer]);
 
-  useEffect(() => {
-    nextQuestion();
-  }, [nextQuestion]);
+  useEffect(() => { nextQuestion(); }, [nextQuestion]);
 
   if (!question) return <div>Carregando...</div>;
 
   const handleReplayAudio = () => {
     if (!question) return;
     if (question.type === 'interval') {
-      playInterval(question.questionAudio.startNote, question.questionAudio.endNote);
+      playInterval(question.questionAudio.startNote, question.questionAudio.endNote, gameSpeed);
     } else if (question.type === 'chord') {
       playChord(question.questionAudio.notes);
     } else {
@@ -134,7 +138,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, onGameOver, onReturnT
         </div>
       </div>
       <div className={styles.timerBarContainer}>
-        <div className={styles.timerBar} style={{ width: `${(timeLeft / TIME_PER_QUESTION) * 100}%`, transition: timeLeft === TIME_PER_QUESTION ? 'none' : 'width 1s linear' }}></div>
+        <div className={styles.timerBar} style={{ width: `${(timeLeft / timePerQuestion) * 100}%`, transition: timeLeft === timePerQuestion ? 'none' : 'width 1s linear' }}></div>
       </div>
       <div className={styles.questionBox}>
         <p className={styles.questionText}>{question.questionText}</p>
