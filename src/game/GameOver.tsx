@@ -3,12 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from './GameOver.module.css';
 import { getHighScore, setHighScore } from '../services/scoreService';
-import { GameMode } from '../App';
+import type { GameMode } from '../types'; // MUDANÇA: Importa de '../types'
 
 interface GameOverProps {
   score: number;
   gameMode: GameMode;
-  onReturnToMenu: () => void; // Prop renomeada de onRestart
+  onReturnToMenu: () => void;
 }
 
 const GameOver: React.FC<GameOverProps> = ({ score, gameMode, onReturnToMenu }) => {
@@ -34,7 +34,6 @@ const GameOver: React.FC<GameOverProps> = ({ score, gameMode, onReturnToMenu }) 
       
       <p className={styles.highScoreText}>Recorde: {highScore}</p>
       
-      {/* Botão com texto alterado */}
       <button className={styles.restartButton} onClick={onReturnToMenu}>
         Voltar ao Menu
       </button>

@@ -2,6 +2,20 @@
 
 import { musicData, orderedNotes, intervals } from '../data/musicData';
 
+// MUDANÇA 1: Definindo a estrutura de uma Pergunta
+export interface Question {
+  type: 'interval' | 'nomenclature' | 'earTraining' | 'chord' | 'absolutePitch';
+  questionText: string;
+  questionAudio: {
+    startNote: string;
+    endNote: string | null;
+    notes: string[];
+  };
+  options: string[];
+  correctAnswer: string;
+}
+
+// --- SEÇÃO DE DADOS E FUNÇÕES AUXILIARES ---
 const nomenclaturasBasicas: { [key: string]: string } = { 'C': 'Dó', 'D': 'Ré', 'E': 'Mi', 'F': 'Fá', 'G': 'Sol', 'A': 'Lá', 'B': 'Si' };
 const solfejoCompleto: { [key: string]: string } = { 'C': 'Dó', 'C♯': 'Dó♯', 'D♭': 'Ré♭', 'D': 'Ré', 'D♯': 'Ré♯', 'E♭': 'Mi♭', 'E': 'Mi', 'F': 'Fá', 'F♯': 'Fá♯', 'G♭': 'Sol♭', 'G': 'Sol', 'G♯': 'Sol♯', 'A♭': 'Lá♭', 'A': 'Lá', 'A♯': 'Lá♯', 'B♭': 'Si♭', 'B': 'Si' };
 const todosOsSolfejos = Object.values(solfejoCompleto);
@@ -10,7 +24,6 @@ const solfejoBasico = Object.values(nomenclaturasBasicas);
 const chromaticScale: string[] = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 const noteToIndex = new Map(chromaticScale.map((note, i) => [note, i]));
 const chordFormulas: { [key: string]: number[] } = { 'Maior': [0, 4, 7], 'menor': [0, 3, 7], 'diminuto': [0, 3, 6], 'aumentado': [0, 4, 8] };
-
 const shuffleArray = (array: any[]) => [...array].sort(() => Math.random() - 0.5);
 
 const buildChord = (root: string, type: string): string[] => {
@@ -19,7 +32,8 @@ const buildChord = (root: string, type: string): string[] => {
   return formula.map(interval => chromaticScale[(rootIndex + interval) % 12]);
 };
 
-export const generateIntervalQuestion = () => {
+// --- FUNÇÕES GERADORAS DE PERGUNTAS (com tipo de retorno explícito) ---
+export const generateIntervalQuestion = (): Question => {
   const startNote = orderedNotes[Math.floor(Math.random() * orderedNotes.length)];
   const correctInterval = intervals[Math.floor(Math.random() * intervals.length)];
   const endNote = musicData[startNote][correctInterval];
@@ -28,13 +42,13 @@ export const generateIntervalQuestion = () => {
   return {
     type: 'interval',
     questionText: `Qual o intervalo entre ${startNote} e ${endNote}?`,
-    questionAudio: { startNote, endNote, notes: [] as string[] },
+    questionAudio: { startNote, endNote, notes: [] },
     options,
     correctAnswer: correctInterval,
   };
 };
 
-export const generateNomenclatureQuestion = () => {
+export const generateNomenclatureQuestion = (): Question => {
   const correctCifra = cifrasBasicas[Math.floor(Math.random() * cifrasBasicas.length)];
   const correctSolfejo = nomenclaturasBasicas[correctCifra];
   const wrongAnswers = solfejoBasico.filter(s => s !== correctSolfejo).sort(() => 0.5 - Math.random()).slice(0, 3);
@@ -42,13 +56,13 @@ export const generateNomenclatureQuestion = () => {
   return {
     type: 'nomenclature',
     questionText: `Qual a nota correspondente à cifra "${correctCifra}"?`,
-    questionAudio: { startNote: correctCifra, endNote: null, notes: [] as string[] },
+    questionAudio: { startNote: correctCifra, endNote: null, notes: [] },
     options,
     correctAnswer: correctSolfejo,
   };
 };
 
-export const generateEarTrainingQuestion = (difficulty: 'easy' | 'medium' | 'hard') => {
+export const generateEarTrainingQuestion = (difficulty: 'easy' | 'medium' | 'hard'): Question => {
   let notePool: string[];
   let answerPool = todosOsSolfejos;
   switch (difficulty) {
@@ -70,13 +84,13 @@ export const generateEarTrainingQuestion = (difficulty: 'easy' | 'medium' | 'har
   return {
     type: 'earTraining',
     questionText: 'Que nota é esta?',
-    questionAudio: { startNote: correctNote, endNote: null, notes: [] as string[] },
+    questionAudio: { startNote: correctNote, endNote: null, notes: [] },
     options,
     correctAnswer,
   };
 };
 
-export const generateChordQuestion = (difficulty: 'easy' | 'medium' | 'hard') => {
+export const generateChordQuestion = (difficulty: 'easy' | 'medium' | 'hard'): Question => {
   let rootPool: string[];
   let typePool: string[];
   switch (difficulty) {
@@ -108,22 +122,66 @@ export const generateChordQuestion = (difficulty: 'easy' | 'medium' | 'hard') =>
   };
 };
 
-export const generateAbsolutePitchQuestion = (level: 1) => {
-  let correctNote: string;
-  let correctAnswer: 'Sim' | 'Não';
-  if (Math.random() < 0.5) {
-    correctNote = 'C';
-    correctAnswer = 'Sim';
-  } else {
-    const otherNotes = chromaticScale.filter(n => n !== 'C');
-    correctNote = otherNotes[Math.floor(Math.random() * otherNotes.length)];
-    correctAnswer = 'Não';
+export const generateAbsolutePitchQuestion = (level: number): Question => {
+  let notePool: string[];
+  let answerPool: string[];
+  let questionText = 'Qual nota é esta?';
+  let options: string[];
+
+  switch (level) {
+    case 1:
+      questionText = 'Esta nota é Dó?';
+      const isNoteC = Math.random() < 0.5;
+      const correctNoteL1 = isNoteC ? 'C' : chromaticScale.filter(n => n !== 'C')[Math.floor(Math.random() * 11)];
+      const correctAnswerL1 = isNoteC ? 'Sim' : 'Não';
+      options = ['Sim', 'Não'];
+      return {
+        type: 'absolutePitch',
+        questionText,
+        questionAudio: { startNote: correctNoteL1, endNote: null, notes: [] },
+        options,
+        correctAnswer: correctAnswerL1,
+      };
+
+    case 2:
+      notePool = ['C', 'G'];
+      answerPool = ['Dó', 'Sol'];
+      break;
+    
+    case 3:
+      notePool = ['C', 'E', 'G'];
+      answerPool = ['Dó', 'Mi', 'Sol'];
+      break;
+
+    case 4:
+      notePool = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+      answerPool = notePool.map(note => solfejoCompleto[note]);
+      break;
+    
+    case 5:
+      notePool = chromaticScale;
+      answerPool = notePool.map(note => solfejoCompleto[note]);
+      break;
+    
+    default:
+      return generateAbsolutePitchQuestion(1);
   }
+
+  const correctNote = notePool[Math.floor(Math.random() * notePool.length)];
+  const correctAnswer = solfejoCompleto[correctNote];
+  
+  if (level === 2 || level === 3) {
+      options = shuffleArray(answerPool);
+  } else {
+      const wrongAnswers = answerPool.filter(answer => answer !== correctAnswer).sort(() => 0.5 - Math.random()).slice(0, 3);
+      options = shuffleArray([correctAnswer, ...wrongAnswers]);
+  }
+
   return {
     type: 'absolutePitch',
-    questionText: 'Esta nota é Dó?',
-    questionAudio: { startNote: correctNote, endNote: null, notes: [] as string[] },
-    options: ['Sim', 'Não'],
+    questionText,
+    questionAudio: { startNote: correctNote, endNote: null, notes: [] },
+    options,
     correctAnswer,
   };
 };

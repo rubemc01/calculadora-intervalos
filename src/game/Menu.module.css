@@ -12,6 +12,7 @@
 }
 
 .title {
+  font-family: 'Playfair Display', serif;
   font-size: 3.5rem;
   color: #ffd700;
   margin-bottom: 10px;
@@ -31,6 +32,7 @@
   max-width: 400px;
 }
 
+/* ESTILO BASE DOS BOTÕES (VOLTOU AO NORMAL) */
 .btn {
   width: 100%;
   padding: 15px 20px;
@@ -41,6 +43,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  color: white; /* Texto branco como padrão */
 }
 
 .btn:hover {
@@ -55,63 +58,28 @@
   margin: 10px auto;
 }
 
-/* Estilos de botões... */
-.btnTool { background-color: #fd7e14; color: white; border: 2px solid #ffc107; }
-.btnInterval { background-color: #28a745; color: white; }
-.btnNomenclature { background-color: #007bff; color: white; }
-.btnEarEasy { background-color: #17a2b8; color: white; }
-.btnEarMedium { background-color: #ffc107; color: #212529; }
-.btnEarHard { background-color: #6f42c1; color: white; }
-.btnChordEasy { background-color: #e83e8c; color: white; }
-.btnChordMedium { background-color: #6610f2; color: white; }
-.btnChordHard { background-color: #343a40; color: white; border: 1px solid #ffc107; }
+/* CORES SÓLIDAS RESTAURADAS PARA OS BOTÕES */
+.btnTool { background-color: #fd7e14; border: 2px solid #ffc107; }
+.btnInterval { background-color: #28a745; }
+.btnNomenclature { background-color: #007bff; }
+.btnEarEasy { background-color: #17a2b8; }
+.btnEarMedium { background-color: #ffc107; color: #212529; } /* Texto escuro para contraste */
+.btnEarHard { background-color: #6f42c1; }
+.btnChordEasy { background-color: #e83e8c; }
+.btnChordMedium { background-color: #6610f2; }
+.btnChordHard { background-color: #343a40; border: 1px solid #ffc107; }
 
-.loadingText {
-  font-size: 1.2rem;
-  color: #ffd700;
-  margin-bottom: 40px;
-  animation: pulse 2s infinite ease-in-out;
+/* ESTILO ESPECIAL APENAS PARA O BOTÃO DE OUVIDO ABSOLUTO */
+.btnAbsolutePitch {
+  background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
+  color: white;
+  border: 1px solid white;
 }
 
-.btn:disabled {
-  background-color: #6c757d;
-  color: #c0c0c0;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  border: none;
-}
-
-@keyframes pulse {
-  0% { opacity: 0.5; }
-  50% { opacity: 1; }
-  100% { opacity: 0.5; }
-}
-
-/* --- NOVOS ESTILOS PARA VELOCIDADE --- */
-.speedSelector {
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.4);
-  border-radius: 25px;
-  padding: 5px;
-  margin-bottom: 30px;
-  border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.speedButton {
-  background: transparent;
-  border: none;
-  color: #a0a0a0;
-  padding: 10px 25px;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.speedButton.active {
-  background-color: #ffd700;
-  color: #111;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
+/* Estilos de Carregamento e Botão Desabilitado (sem alterações) */
+.loadingText { font-size: 1.2rem; color: #ffd700; margin-bottom: 40px; animation: pulse 2s infinite ease-in-out; }
+.btn:disabled { background-color: #6c757d; color: #c0c0c0; cursor: not-allowed; transform: none; box-shadow: none; border: none; }
+@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+.speedSelector { display: flex; background-color: rgba(0, 0, 0, 0.4); border-radius: 25px; padding: 5px; margin-bottom: 30px; border: 1px solid rgba(255, 215, 0, 0.2); }
+.speedButton { background: transparent; border: none; color: #a0a0a0; padding: 10px 25px; font-size: 1rem; font-weight: bold; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; }
+.speedButton.active { background-color: #ffd700; color: #111; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }

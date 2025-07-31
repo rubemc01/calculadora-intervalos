@@ -1,5 +1,6 @@
 // src/App.tsx
 
+// A CORREÇÃO ESTÁ NESTA LINHA:
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
@@ -9,6 +10,7 @@ import GameOver from './game/GameOver';
 import imagemDeFundo from './assets/fundo-musical.jpg';
 import IntervalCalculator from './components/IntervalCalculator'; 
 import { isPianoReady } from './services/audioService';
+import AbsolutePitchMenu from './game/AbsolutePitchMenu';
 
 export type GameMode = 
   | 'interval' 
@@ -19,7 +21,11 @@ export type GameMode =
   | 'chordEasy' 
   | 'chordMedium' 
   | 'chordHard'
-  | 'absolutePitch_L1';
+  | 'absolutePitch_L1' 
+  | 'absolutePitch_L2' 
+  | 'absolutePitch_L3' 
+  | 'absolutePitch_L4' 
+  | 'absolutePitch_L5';
 
 export type GameSpeed = 'beginner' | 'normal' | 'fast';
 
@@ -28,15 +34,11 @@ function App() {
   const [lastGameMode, setLastGameMode] = useState<GameMode>('interval');
   const [isAudioReady, setIsAudioReady] = useState(false);
   const [gameSpeed, setGameSpeed] = useState<GameSpeed>('beginner');
-
   const navigate = useNavigate(); 
 
   useEffect(() => {
     const readyCheck = setInterval(() => {
-      if (isPianoReady()) {
-        setIsAudioReady(true);
-        clearInterval(readyCheck);
-      }
+      if (isPianoReady()) { setIsAudioReady(true); clearInterval(readyCheck); }
     }, 200);
     return () => clearInterval(readyCheck);
   }, []);
@@ -51,17 +53,9 @@ function App() {
     navigate('/fim-de-jogo');
   };
 
-  const handleReturnToMenu = () => {
-    navigate('/');
-  };
-
-  const handleShowTool = () => {
-    navigate('/ferramenta');
-  };
-
-  const handleSpeedChange = (newSpeed: GameSpeed) => {
-    setGameSpeed(newSpeed);
-  };
+  const handleReturnToMenu = () => { navigate('/'); };
+  const handleShowTool = () => { navigate('/ferramenta'); };
+  const handleSpeedChange = (newSpeed: GameSpeed) => { setGameSpeed(newSpeed); };
 
   return (
     <div className={styles.appContainer} style={{ backgroundImage: `url(${imagemDeFundo})` }}>
@@ -83,9 +77,7 @@ function App() {
               onReturnToMenu={handleReturnToMenu} 
             />
           } />
-          <Route path="/ferramenta" element={
-            <IntervalCalculator onReturnToMenu={handleReturnToMenu} />
-          } />
+          <Route path="/ferramenta" element={ <IntervalCalculator onReturnToMenu={handleReturnToMenu} /> } />
           <Route path="/fim-de-jogo" element={
             <GameOver 
               score={lastScore} 
@@ -93,6 +85,7 @@ function App() {
               onReturnToMenu={handleReturnToMenu} 
             />
           } />
+          <Route path="/ouvido-absoluto" element={ <AbsolutePitchMenu /> } />
         </Routes>
       </main>
     </div>

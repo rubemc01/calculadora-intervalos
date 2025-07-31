@@ -3,7 +3,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './GameScreen.module.css';
-import { generateIntervalQuestion, generateNomenclatureQuestion, generateEarTrainingQuestion, generateChordQuestion, generateAbsolutePitchQuestion } from '../services/gameLogic';
+import { 
+  generateIntervalQuestion, 
+  generateNomenclatureQuestion, 
+  generateEarTrainingQuestion, 
+  generateChordQuestion, 
+  generateAbsolutePitchQuestion,
+  Question // <-- Importa o tipo
+} from '../services/gameLogic';
 import { playInterval, playNote, playChord } from '../services/audioService';
 import { GameMode, GameSpeed } from '../App';
 
@@ -12,8 +19,6 @@ interface GameScreenProps {
   onGameOver: (finalScore: number) => void;
   onReturnToMenu: () => void;
 }
-
-type Question = ReturnType<typeof generateIntervalQuestion | typeof generateNomenclatureQuestion | typeof generateEarTrainingQuestion | typeof generateChordQuestion | typeof generateAbsolutePitchQuestion>;
 
 const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturnToMenu }) => {
   const { gameMode } = useParams<{ gameMode: GameMode }>();
@@ -56,17 +61,22 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     setTimeLeft(timePerQuestion);
     setSelectedAnswer(null);
     let newQuestion: Question;
-    switch (gameMode) {
-      case 'interval': newQuestion = generateIntervalQuestion(); break;
-      case 'nomenclature': newQuestion = generateNomenclatureQuestion(); break;
-      case 'earTrainingEasy': newQuestion = generateEarTrainingQuestion('easy'); break;
-      case 'earTrainingMedium': newQuestion = generateEarTrainingQuestion('medium'); break;
-      case 'earTrainingHard': newQuestion = generateEarTrainingQuestion('hard'); break;
-      case 'chordEasy': newQuestion = generateChordQuestion('easy'); break;
-      case 'chordMedium': newQuestion = generateChordQuestion('medium'); break;
-      case 'chordHard': newQuestion = generateChordQuestion('hard'); break;
-      case 'absolutePitch_L1': newQuestion = generateAbsolutePitchQuestion(1); break;
-      default: newQuestion = generateIntervalQuestion(); break;
+
+    if (gameMode?.startsWith('absolutePitch_')) {
+      const level = parseInt(gameMode.split('_L')[1], 10);
+      newQuestion = generateAbsolutePitchQuestion(level);
+    } else {
+      switch (gameMode) {
+        case 'interval': newQuestion = generateIntervalQuestion(); break;
+        case 'nomenclature': newQuestion = generateNomenclatureQuestion(); break;
+        case 'earTrainingEasy': newQuestion = generateEarTrainingQuestion('easy'); break;
+        case 'earTrainingMedium': newQuestion = generateEarTrainingQuestion('medium'); break;
+        case 'earTrainingHard': newQuestion = generateEarTrainingQuestion('hard'); break;
+        case 'chordEasy': newQuestion = generateChordQuestion('easy'); break;
+        case 'chordMedium': newQuestion = generateChordQuestion('medium'); break;
+        case 'chordHard': newQuestion = generateChordQuestion('hard'); break;
+        default: newQuestion = generateIntervalQuestion(); break;
+      }
     }
     setQuestion(newQuestion);
 
@@ -77,6 +87,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     } else {
       playNote(newQuestion.questionAudio.startNote);
     }
+
   }, [gameMode, clearTimer, timePerQuestion, gameSpeed]);
 
   const handleAnswer = useCallback((answer: string) => {

@@ -1,0 +1,89 @@
+/* src/game/AbsolutePitchMenu.module.css */
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #c0c0c0;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.levelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.levelCard {
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  padding: 25px;
+  border-radius: 15px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  text-align: left;
+}
+
+.levelCard:hover {
+  transform: translateY(-5px);
+  border-color: #ffd700;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.levelNumber {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #17a2b8;
+  margin-bottom: 10px;
+}
+
+.levelTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.levelDescription {
+  font-size: 1rem;
+  color: #c0c0c0;
+}
+
+.backButton {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
