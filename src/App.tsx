@@ -1,6 +1,7 @@
 // src/App.tsx
 
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
 import Menu from './game/Menu';
 import GameScreen from './game/GameScreen';
@@ -17,19 +18,18 @@ export type GameMode =
   | 'earTrainingHard'
   | 'chordEasy' 
   | 'chordMedium' 
-  | 'chordHard';
+  | 'chordHard'
+  | 'absolutePitch_L1';
 
-// MUDANÇA AQUI: Adiciona a nova velocidade
-export type GameSpeed = 'beginner' | 'normal' | 'fast'; 
-type AppState = 'menu' | 'playing' | 'gameOver' | 'tool';
+export type GameSpeed = 'beginner' | 'normal' | 'fast';
 
 function App() {
-  const [appState, setAppState] = useState<AppState>('menu');
-  const [gameMode, setGameMode] = useState<GameMode>('interval');
-  const [finalScore, setFinalScore] = useState(0);
+  const [lastScore, setLastScore] = useState(0);
+  const [lastGameMode, setLastGameMode] = useState<GameMode>('interval');
   const [isAudioReady, setIsAudioReady] = useState(false);
-  // MUDANÇA AQUI: A velocidade padrão agora é 'beginner'
-  const [gameSpeed, setGameSpeed] = useState<GameSpeed>('beginner'); 
+  const [gameSpeed, setGameSpeed] = useState<GameSpeed>('beginner');
+
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const readyCheck = setInterval(() => {
@@ -38,50 +38,62 @@ function App() {
         clearInterval(readyCheck);
       }
     }, 200);
-
     return () => clearInterval(readyCheck);
   }, []);
 
   const handleStartGame = (mode: GameMode) => {
-    setGameMode(mode);
-    setAppState('playing');
+    setLastGameMode(mode);
+    navigate(`/jogo/${mode}`);
   };
 
   const handleGameOver = (score: number) => {
-    setFinalScore(score);
-    setAppState('gameOver');
+    setLastScore(score);
+    navigate('/fim-de-jogo');
   };
 
   const handleReturnToMenu = () => {
-    setAppState('menu');
+    navigate('/');
   };
 
   const handleShowTool = () => {
-    setAppState('tool');
+    navigate('/ferramenta');
   };
 
   const handleSpeedChange = (newSpeed: GameSpeed) => {
     setGameSpeed(newSpeed);
   };
 
-  const renderAppState = () => {
-    switch (appState) {
-      case 'playing':
-        return <GameScreen gameMode={gameMode} gameSpeed={gameSpeed} onGameOver={handleGameOver} onReturnToMenu={handleReturnToMenu} />;
-      case 'gameOver':
-        return <GameOver score={finalScore} gameMode={gameMode} onReturnToMenu={handleReturnToMenu} />;
-      case 'tool':
-        return <IntervalCalculator onReturnToMenu={handleReturnToMenu} />;
-      case 'menu':
-      default:
-        return <Menu onStartGame={handleStartGame} onShowTool={handleShowTool} isAudioReady={isAudioReady} gameSpeed={gameSpeed} onSpeedChange={handleSpeedChange} />;
-    }
-  };
-
   return (
     <div className={styles.appContainer} style={{ backgroundImage: `url(${imagemDeFundo})` }}>
       <main className={styles.mainContent}>
-        {renderAppState()}
+        <Routes>
+          <Route path="/" element={
+            <Menu 
+              onStartGame={handleStartGame} 
+              onShowTool={handleShowTool} 
+              isAudioReady={isAudioReady} 
+              gameSpeed={gameSpeed} 
+              onSpeedChange={handleSpeedChange} 
+            />
+          } />
+          <Route path="/jogo/:gameMode" element={
+            <GameScreen 
+              gameSpeed={gameSpeed} 
+              onGameOver={handleGameOver} 
+              onReturnToMenu={handleReturnToMenu} 
+            />
+          } />
+          <Route path="/ferramenta" element={
+            <IntervalCalculator onReturnToMenu={handleReturnToMenu} />
+          } />
+          <Route path="/fim-de-jogo" element={
+            <GameOver 
+              score={lastScore} 
+              gameMode={lastGameMode} 
+              onReturnToMenu={handleReturnToMenu} 
+            />
+          } />
+        </Routes>
       </main>
     </div>
   );

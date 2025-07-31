@@ -1,22 +1,23 @@
 // src/game/GameScreen.tsx
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './GameScreen.module.css';
-import { generateIntervalQuestion, generateNomenclatureQuestion, generateEarTrainingQuestion, generateChordQuestion } from '../services/gameLogic';
+import { generateIntervalQuestion, generateNomenclatureQuestion, generateEarTrainingQuestion, generateChordQuestion, generateAbsolutePitchQuestion } from '../services/gameLogic';
 import { playInterval, playNote, playChord } from '../services/audioService';
 import { GameMode, GameSpeed } from '../App';
 
 interface GameScreenProps {
-  gameMode: GameMode;
   gameSpeed: GameSpeed;
   onGameOver: (finalScore: number) => void;
   onReturnToMenu: () => void;
 }
 
-type Question = ReturnType<typeof generateIntervalQuestion | typeof generateNomenclatureQuestion | typeof generateEarTrainingQuestion | typeof generateChordQuestion>;
+type Question = ReturnType<typeof generateIntervalQuestion | typeof generateNomenclatureQuestion | typeof generateEarTrainingQuestion | typeof generateChordQuestion | typeof generateAbsolutePitchQuestion>;
 
-const GameScreen: React.FC<GameScreenProps> = ({ gameMode, gameSpeed, onGameOver, onReturnToMenu }) => {
-  
+const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturnToMenu }) => {
+  const { gameMode } = useParams<{ gameMode: GameMode }>();
+
   const getTimeForSpeed = (speed: GameSpeed) => {
     switch (speed) {
       case 'fast': return 8;
@@ -25,7 +26,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, gameSpeed, onGameOver
     }
   };
   const timePerQuestion = getTimeForSpeed(gameSpeed);
-
+  
   const [question, setQuestion] = useState<Question | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -64,6 +65,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, gameSpeed, onGameOver
       case 'chordEasy': newQuestion = generateChordQuestion('easy'); break;
       case 'chordMedium': newQuestion = generateChordQuestion('medium'); break;
       case 'chordHard': newQuestion = generateChordQuestion('hard'); break;
+      case 'absolutePitch_L1': newQuestion = generateAbsolutePitchQuestion(1); break;
       default: newQuestion = generateIntervalQuestion(); break;
     }
     setQuestion(newQuestion);
@@ -75,7 +77,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameMode, gameSpeed, onGameOver
     } else {
       playNote(newQuestion.questionAudio.startNote);
     }
-
   }, [gameMode, clearTimer, timePerQuestion, gameSpeed]);
 
   const handleAnswer = useCallback((answer: string) => {
