@@ -66,12 +66,22 @@ export const generateNomenclatureQuestion = (): Question => {
 export const generateChordCipherQuestion = (): Question => {
   const correctCipher = allChordCiphers[Math.floor(Math.random() * allChordCiphers.length)];
   const correctAnswer = chordCiphers[correctCipher];
+  let rootNote: string;
+  let chordType: string;
+  if (correctCipher.endsWith('m')) {
+      chordType = 'menor';
+      rootNote = correctCipher.slice(0, -1);
+  } else {
+      chordType = 'Maior';
+      rootNote = correctCipher;
+  }
+  const chordNotes = buildChord(rootNote, chordType);
   const wrongAnswers = allChordNames.filter(name => name !== correctAnswer).sort(() => 0.5 - Math.random()).slice(0, 3);
   const options = shuffleArray([correctAnswer, ...wrongAnswers]);
   return {
     type: 'chordCipher',
     questionText: `Qual acorde a cifra "${correctCipher}" representa?`,
-    questionAudio: { startNote: '', endNote: null, notes: [] },
+    questionAudio: { startNote: '', endNote: null, notes: chordNotes },
     options,
     correctAnswer,
   };
