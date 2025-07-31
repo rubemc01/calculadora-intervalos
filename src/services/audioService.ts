@@ -1,7 +1,7 @@
 // src/services/audioService.ts
 
 import * as Tone from 'tone';
-import type { GameSpeed } from '../App'; // Importa o tipo GameSpeed
+import type { GameSpeed } from '../types'; // MUDANÇA: Importa de '../types'
 
 const pianoSampler = new Tone.Sampler({
   urls: {
@@ -36,14 +36,11 @@ export const playNote = async (note: string) => {
   pianoSampler.triggerAttackRelease(getToneNote(note), 1.2, now);
 };
 
-// --- MUDANÇA PRINCIPAL AQUI ---
-// A função agora aceita 'gameSpeed' como um argumento
 export const playInterval = async (startNote: string, endNote: string | null, gameSpeed: GameSpeed) => {
   await startAudioContext();
   
-  // Define a duração da nota e o espaçamento com base na velocidade
-  let duration = 0.5; // Duração em segundos
-  let spacing = 0.6; // Espaçamento em segundos
+  let duration = 0.5;
+  let spacing = 0.6;
 
   switch(gameSpeed) {
     case 'beginner':
@@ -56,7 +53,6 @@ export const playInterval = async (startNote: string, endNote: string | null, ga
       break;
     case 'normal':
     default:
-      // Mantém os valores padrão
       break;
   }
 

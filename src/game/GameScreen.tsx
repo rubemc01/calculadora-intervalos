@@ -1,5 +1,7 @@
 // src/game/GameScreen.tsx
 
+// src/game/GameScreen.tsx
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './GameScreen.module.css';
@@ -9,10 +11,10 @@ import {
   generateEarTrainingQuestion, 
   generateChordQuestion, 
   generateAbsolutePitchQuestion,
-  Question // <-- Importa o tipo
+  generateChordCipherQuestion
 } from '../services/gameLogic';
 import { playInterval, playNote, playChord } from '../services/audioService';
-import { GameMode, GameSpeed } from '../App';
+import type { GameMode, GameSpeed, Question } from '../types'; // Importa Question do lugar certo
 
 interface GameScreenProps {
   gameSpeed: GameSpeed;
@@ -61,7 +63,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     setTimeLeft(timePerQuestion);
     setSelectedAnswer(null);
     let newQuestion: Question;
-
+    
     if (gameMode?.startsWith('absolutePitch_')) {
       const level = parseInt(gameMode.split('_L')[1], 10);
       newQuestion = generateAbsolutePitchQuestion(level);
@@ -69,6 +71,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
       switch (gameMode) {
         case 'interval': newQuestion = generateIntervalQuestion(); break;
         case 'nomenclature': newQuestion = generateNomenclatureQuestion(); break;
+        case 'chordCipher': newQuestion = generateChordCipherQuestion(); break;
         case 'earTrainingEasy': newQuestion = generateEarTrainingQuestion('easy'); break;
         case 'earTrainingMedium': newQuestion = generateEarTrainingQuestion('medium'); break;
         case 'earTrainingHard': newQuestion = generateEarTrainingQuestion('hard'); break;
@@ -84,9 +87,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
       playInterval(newQuestion.questionAudio.startNote, newQuestion.questionAudio.endNote, gameSpeed);
     } else if (newQuestion.type === 'chord') {
       playChord(newQuestion.questionAudio.notes);
-    } else {
+    } else if (newQuestion.type === 'nomenclature' || newQuestion.type === 'earTraining' || newQuestion.type === 'absolutePitch') {
       playNote(newQuestion.questionAudio.startNote);
     }
+    // Para 'chordCipher', nenhum som é tocado
 
   }, [gameMode, clearTimer, timePerQuestion, gameSpeed]);
 
@@ -125,7 +129,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
   if (!question) return <div>Carregando...</div>;
 
   const handleReplayAudio = () => {
-    if (!question) return;
+    if (!question || question.type === 'nomenclature' || question.type === 'chordCipher') return;
+
     if (question.type === 'interval') {
       playInterval(question.questionAudio.startNote, question.questionAudio.endNote, gameSpeed);
     } else if (question.type === 'chord') {
@@ -154,7 +159,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
       </div>
       <div className={styles.questionBox}>
         <p className={styles.questionText}>{question.questionText}</p>
-        <button className={styles.audioButton} onClick={handleReplayAudio}>Ouvir Novamente</button>
+        {question.type !== 'nomenclature' && question.type !== 'chordCipher' && (
+          <button className={styles.audioButton} onClick={handleReplayAudio}>Ouvir Novamente</button>
+        )}
       </div>
       <div className={styles.optionsGrid}>
         {question.options.map((option: string, index: number) => (

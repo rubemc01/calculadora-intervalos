@@ -1,19 +1,7 @@
 // src/services/gameLogic.ts
 
 import { musicData, orderedNotes, intervals } from '../data/musicData';
-
-// MUDANÇA 1: Definindo a estrutura de uma Pergunta
-export interface Question {
-  type: 'interval' | 'nomenclature' | 'earTraining' | 'chord' | 'absolutePitch';
-  questionText: string;
-  questionAudio: {
-    startNote: string;
-    endNote: string | null;
-    notes: string[];
-  };
-  options: string[];
-  correctAnswer: string;
-}
+import type { Question } from '../types';
 
 // --- SEÇÃO DE DADOS E FUNÇÕES AUXILIARES ---
 const nomenclaturasBasicas: { [key: string]: string } = { 'C': 'Dó', 'D': 'Ré', 'E': 'Mi', 'F': 'Fá', 'G': 'Sol', 'A': 'Lá', 'B': 'Si' };
@@ -26,13 +14,26 @@ const noteToIndex = new Map(chromaticScale.map((note, i) => [note, i]));
 const chordFormulas: { [key: string]: number[] } = { 'Maior': [0, 4, 7], 'menor': [0, 3, 7], 'diminuto': [0, 3, 6], 'aumentado': [0, 4, 8] };
 const shuffleArray = (array: any[]) => [...array].sort(() => Math.random() - 0.5);
 
+const chordCiphers: { [key: string]: string } = {
+    'C': 'Dó Maior', 'Cm': 'Dó menor',
+    'G': 'Sol Maior', 'Gm': 'Sol menor',
+    'D': 'Ré Maior', 'Dm': 'Ré menor',
+    'A': 'Lá Maior', 'Am': 'Lá menor',
+    'E': 'Mi Maior', 'Em': 'Mi menor',
+    'B': 'Si Maior', 'Bm': 'Si menor',
+    'F': 'Fá Maior', 'Fm': 'Fá menor',
+};
+const allChordCiphers = Object.keys(chordCiphers);
+const allChordNames = Object.values(chordCiphers);
+
 const buildChord = (root: string, type: string): string[] => {
   const rootIndex = noteToIndex.get(root)!;
   const formula = chordFormulas[type];
   return formula.map(interval => chromaticScale[(rootIndex + interval) % 12]);
 };
 
-// --- FUNÇÕES GERADORAS DE PERGUNTAS (com tipo de retorno explícito) ---
+// --- FUNÇÕES GERADORAS DE PERGUNTAS ---
+
 export const generateIntervalQuestion = (): Question => {
   const startNote = orderedNotes[Math.floor(Math.random() * orderedNotes.length)];
   const correctInterval = intervals[Math.floor(Math.random() * intervals.length)];
@@ -59,6 +60,20 @@ export const generateNomenclatureQuestion = (): Question => {
     questionAudio: { startNote: correctCifra, endNote: null, notes: [] },
     options,
     correctAnswer: correctSolfejo,
+  };
+};
+
+export const generateChordCipherQuestion = (): Question => {
+  const correctCipher = allChordCiphers[Math.floor(Math.random() * allChordCiphers.length)];
+  const correctAnswer = chordCiphers[correctCipher];
+  const wrongAnswers = allChordNames.filter(name => name !== correctAnswer).sort(() => 0.5 - Math.random()).slice(0, 3);
+  const options = shuffleArray([correctAnswer, ...wrongAnswers]);
+  return {
+    type: 'chordCipher',
+    questionText: `Qual acorde a cifra "${correctCipher}" representa?`,
+    questionAudio: { startNote: '', endNote: null, notes: [] },
+    options,
+    correctAnswer,
   };
 };
 
@@ -127,7 +142,6 @@ export const generateAbsolutePitchQuestion = (level: number): Question => {
   let answerPool: string[];
   let questionText = 'Qual nota é esta?';
   let options: string[];
-
   switch (level) {
     case 1:
       questionText = 'Esta nota é Dó?';
@@ -142,41 +156,24 @@ export const generateAbsolutePitchQuestion = (level: number): Question => {
         options,
         correctAnswer: correctAnswerL1,
       };
-
-    case 2:
-      notePool = ['C', 'G'];
-      answerPool = ['Dó', 'Sol'];
-      break;
-    
-    case 3:
-      notePool = ['C', 'E', 'G'];
-      answerPool = ['Dó', 'Mi', 'Sol'];
-      break;
-
+    case 2: notePool = ['C', 'G']; answerPool = ['Dó', 'Sol']; break;
+    case 3: notePool = ['C', 'E', 'G']; answerPool = ['Dó', 'Mi', 'Sol']; break;
     case 4:
       notePool = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-      answerPool = notePool.map(note => solfejoCompleto[note]);
-      break;
-    
+      answerPool = notePool.map(note => solfejoCompleto[note]); break;
     case 5:
       notePool = chromaticScale;
-      answerPool = notePool.map(note => solfejoCompleto[note]);
-      break;
-    
-    default:
-      return generateAbsolutePitchQuestion(1);
+      answerPool = notePool.map(note => solfejoCompleto[note]); break;
+    default: return generateAbsolutePitchQuestion(1);
   }
-
   const correctNote = notePool[Math.floor(Math.random() * notePool.length)];
   const correctAnswer = solfejoCompleto[correctNote];
-  
   if (level === 2 || level === 3) {
-      options = shuffleArray(answerPool);
+    options = shuffleArray(answerPool);
   } else {
-      const wrongAnswers = answerPool.filter(answer => answer !== correctAnswer).sort(() => 0.5 - Math.random()).slice(0, 3);
-      options = shuffleArray([correctAnswer, ...wrongAnswers]);
+    const wrongAnswers = answerPool.filter(answer => answer !== correctAnswer).sort(() => 0.5 - Math.random()).slice(0, 3);
+    options = shuffleArray([correctAnswer, ...wrongAnswers]);
   }
-
   return {
     type: 'absolutePitch',
     questionText,

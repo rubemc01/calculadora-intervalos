@@ -3,7 +3,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './AbsolutePitchMenu.module.css';
-import { GameMode } from '../App';
+import type { GameMode } from '../types'; // MUDANÇA: Importa de '../types'
 
 const levels: { level: number; title: string; description: string; gameMode: GameMode }[] = [
   { level: 1, title: "A Nota Âncora", description: "Concentre-se em identificar a nota Dó.", gameMode: "absolutePitch_L1" },

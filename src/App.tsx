@@ -1,6 +1,5 @@
 // src/App.tsx
 
-// A CORREÇÃO ESTÁ NESTA LINHA:
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
@@ -11,23 +10,7 @@ import imagemDeFundo from './assets/fundo-musical.jpg';
 import IntervalCalculator from './components/IntervalCalculator'; 
 import { isPianoReady } from './services/audioService';
 import AbsolutePitchMenu from './game/AbsolutePitchMenu';
-
-export type GameMode = 
-  | 'interval' 
-  | 'nomenclature' 
-  | 'earTrainingEasy' 
-  | 'earTrainingMedium' 
-  | 'earTrainingHard'
-  | 'chordEasy' 
-  | 'chordMedium' 
-  | 'chordHard'
-  | 'absolutePitch_L1' 
-  | 'absolutePitch_L2' 
-  | 'absolutePitch_L3' 
-  | 'absolutePitch_L4' 
-  | 'absolutePitch_L5';
-
-export type GameSpeed = 'beginner' | 'normal' | 'fast';
+import type { GameMode, GameSpeed } from './types';
 
 function App() {
   const [lastScore, setLastScore] = useState(0);

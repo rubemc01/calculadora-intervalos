@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Menu.module.css';
 import { startAudioContext } from '../services/audioService';
-import type { GameMode, GameSpeed } from '../types'; // MUDANÇA: Importa de '../types'
+import type { GameMode, GameSpeed } from '../types';
 
 interface MenuProps {
   onStartGame: (gameMode: GameMode) => void;
@@ -48,6 +48,12 @@ const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady, game
         <hr className={styles.separator} />
         <button className={`${styles.btn} ${styles.btnInterval}`} onClick={() => handleModeSelection('interval')} disabled={!isAudioReady}>Adivinhe o Intervalo</button>
         <button className={`${styles.btn} ${styles.btnNomenclature}`} onClick={() => handleModeSelection('nomenclature')} disabled={!isAudioReady}>Duelo de Nomenclaturas</button>
+        
+        {/* NOVO BOTÃO ADICIONADO */}
+        <button className={`${styles.btn} ${styles.btnChordCipher}`} onClick={() => handleModeSelection('chordCipher')} disabled={!isAudioReady}>
+          Duelo de Acordes
+        </button>
+
         <button className={`${styles.btn} ${styles.btnEarEasy}`} onClick={() => handleModeSelection('earTrainingEasy')} disabled={!isAudioReady}>Adivinhe a Nota (Fácil)</button>
         <button className={`${styles.btn} ${styles.btnEarMedium}`} onClick={() => handleModeSelection('earTrainingMedium')} disabled={!isAudioReady}>Adivinhe a Nota (Médio)</button>
         <button className={`${styles.btn} ${styles.btnEarHard}`} onClick={() => handleModeSelection('earTrainingHard')} disabled={!isAudioReady}>Adivinhe a Nota (Difícil)</button>
