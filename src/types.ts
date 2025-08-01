@@ -18,10 +18,11 @@ export interface Question {
     startNote: string;
     endNote: string | null;
     notes: string[];
-    sequence?: { time: string, note: string | string[], duration: string }[]; // A propriedade 'note' foi alterada aqui
+    sequence?: { time: string, note: string | string[], duration: string }[];
   };
   options: string[];
   correctAnswer: string;
+  questionId?: number;
 }
 
 export interface RiffQuestion {
@@ -29,6 +30,5 @@ export interface RiffQuestion {
   songTitle: string;
   artist: string;
   options: string[];
-  // MUDANÇA AQUI: A propriedade 'note' agora pode ser uma string OU um array de strings
   sequence: { time: string, note: string | string[], duration: string }[];
 }

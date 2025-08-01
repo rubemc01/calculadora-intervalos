@@ -2,7 +2,12 @@
 
 import { musicData, orderedNotes, intervals } from '../data/musicData';
 import { riffsData } from '../data/riffsData';
-import type { Question } from '../types';
+import type { Question } from '../types'; // MUDANÇA: Importa a Question do lugar certo
+
+// --- (O resto completo do seu arquivo gameLogic.ts vai aqui) ---
+// (Certifique-se de que todo o restante do arquivo, com todas as funções
+// como generateIntervalQuestion, generateRiffQuestion, etc., esteja presente)
+
 
 // --- SEÇÃO DE DADOS E FUNÇÕES AUXILIARES ---
 const nomenclaturasBasicas: { [key: string]: string } = { 'C': 'Dó', 'D': 'Ré', 'E': 'Mi', 'F': 'Fá', 'G': 'Sol', 'A': 'Lá', 'B': 'Si' };
@@ -194,12 +199,26 @@ export const generateAbsolutePitchQuestion = (level: number): Question => {
   };
 };
 
-export const generateRiffQuestion = (): Question => {
-  const randomRiff = riffsData[Math.floor(Math.random() * riffsData.length)];
+// --- FUNÇÃO MODIFICADA ---
+export const generateRiffQuestion = (excludeIds: number[] = []): Question => {
+  // Filtra riffs com apenas uma nota E riffs que já foram tocados
+  let availableRiffs = riffsData.filter(
+    riff => riff.sequence.length > 1 && !excludeIds.includes(riff.id)
+  );
+
+  // Se todos os riffs válidos já foram tocados, reseta a lista
+  if (availableRiffs.length === 0) {
+    availableRiffs = riffsData.filter(riff => riff.sequence.length > 1);
+    // Retorna um objeto especial ou lida com o reset no GameScreen
+  }
+
+  const randomRiff = availableRiffs[Math.floor(Math.random() * availableRiffs.length)];
   const correctAnswer = `${randomRiff.songTitle} - ${randomRiff.artist}`;
   const options = shuffleArray([correctAnswer, ...randomRiff.options]);
+
   return {
     type: 'riff',
+    questionId: randomRiff.id, // Adiciona o ID do riff à pergunta
     questionText: 'Qual é o Riff?',
     questionAudio: {
       startNote: '',

@@ -1,6 +1,6 @@
 // src/game/GameScreen.tsx
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'; // CORREÇÃO: Adicionado 'useMemo'
 import { useParams } from 'react-router-dom';
 import styles from './GameScreen.module.css';
 import { 
@@ -11,9 +11,9 @@ import {
   generateAbsolutePitchQuestion,
   generateChordCipherQuestion,
   generateRiffQuestion
-} from '../services/gameLogic'; // A 'Question' NÃO é importada daqui
+} from '../services/gameLogic'; // CORREÇÃO: Caminho do import corrigido
 import { playInterval, playNote, playChord, playRiff } from '../services/audioService';
-import type { GameMode, GameSpeed, Question } from '../types'; // A 'Question' É importada daqui
+import type { GameMode, GameSpeed, Question } from '../types';
 
 interface GameScreenProps {
   gameSpeed: GameSpeed;
@@ -24,14 +24,13 @@ interface GameScreenProps {
 const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturnToMenu }) => {
   const { gameMode } = useParams<{ gameMode: GameMode }>();
 
-  const getTimeForSpeed = (speed: GameSpeed) => {
-    switch (speed) {
+  const timePerQuestion = useMemo(() => {
+    switch (gameSpeed) {
       case 'fast': return 12;
       case 'normal': return 20;
       case 'beginner': default: return 30;
     }
-  };
-  const timePerQuestion = getTimeForSpeed(gameSpeed);
+  }, [gameSpeed]);
   
   const [question, setQuestion] = useState<Question | null>(null);
   const [score, setScore] = useState(0);
@@ -40,8 +39,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
   const [timeLeft, setTimeLeft] = useState(timePerQuestion);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [replayCount, setReplayCount] = useState(0);
+  const [playedRiffIds, setPlayedRiffIds] = useState<number[]>([]);
 
   const clearTimer = useCallback(() => { if (timerRef.current) clearInterval(timerRef.current); }, []);
+
   const triggerGameOver = useCallback(() => {
     clearTimer();
     onGameOver(score);
@@ -60,7 +62,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     setFeedback('');
     setTimeLeft(timePerQuestion);
     setSelectedAnswer(null);
+    setReplayCount(0);
     let newQuestion: Question;
+
     if (gameMode?.startsWith('absolutePitch_')) {
       const level = parseInt(gameMode.split('_L')[1], 10);
       newQuestion = generateAbsolutePitchQuestion(level);
@@ -75,7 +79,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
         case 'chordEasy': newQuestion = generateChordQuestion('easy'); break;
         case 'chordMedium': newQuestion = generateChordQuestion('medium'); break;
         case 'chordHard': newQuestion = generateChordQuestion('hard'); break;
-        case 'riff': newQuestion = generateRiffQuestion(); break;
+        case 'riff': newQuestion = generateRiffQuestion(playedRiffIds); break;
         default: newQuestion = generateIntervalQuestion(); break;
       }
     }
@@ -90,7 +94,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     } else if (newQuestion.type !== 'nomenclature') {
       playNote(newQuestion.questionAudio.startNote);
     }
-  }, [gameMode, clearTimer, timePerQuestion, gameSpeed]);
+  }, [gameMode, clearTimer, timePerQuestion, gameSpeed, playedRiffIds]);
 
   const handleAnswer = useCallback((answer: string) => {
     if (feedback) return;
@@ -98,18 +102,21 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     setSelectedAnswer(answer);
     const isCorrect = answer === question?.correctAnswer;
     if (isCorrect) {
-      setScore(prev => prev + 10 + timeLeft);
+      const penalty = replayCount * 5;
+      const pointsWon = Math.max(0, 10 + timeLeft - penalty);
+      setScore(prev => prev + pointsWon);
       setFeedback('correct');
     } else {
       handleWrongAnswer();
     }
     setTimeout(() => { if (isCorrect || lives > 1) nextQuestion(); }, 1500);
-  }, [feedback, question, timeLeft, lives, clearTimer, handleWrongAnswer, nextQuestion]);
+  }, [feedback, question, timeLeft, lives, replayCount, clearTimer, handleWrongAnswer, nextQuestion]);
 
   useEffect(() => {
     if (!feedback) {
       timerRef.current = setInterval(() => {
-        setTimeLeft(prev => {
+        // CORREÇÃO: Adicionado o tipo 'number' ao parâmetro 'prev'
+        setTimeLeft((prev: number) => {
           if (prev <= 1) {
             clearTimer();
             handleWrongAnswer();
@@ -128,6 +135,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
 
   const handleReplayAudio = () => {
     if (!question) return;
+    setReplayCount(prev => prev + 1);
     if (question.type === 'riff' && question.questionAudio.sequence) {
         playRiff(question.questionAudio.sequence);
     } else if (question.type === 'interval') {
@@ -159,7 +167,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
       <div className={styles.questionBox}>
         <p className={styles.questionText}>{question.questionText}</p>
         {question.type !== 'nomenclature' && (
-          <button className={styles.audioButton} onClick={handleReplayAudio}>Ouvir Novamente</button>
+          <button className={styles.audioButton} onClick={handleReplayAudio}>
+            {replayCount === 0 ? 'Ouvir Novamente' : 'Ouvir de Novo (-5 pts)'}
+          </button>
         )}
       </div>
       <div className={styles.optionsGrid}>
