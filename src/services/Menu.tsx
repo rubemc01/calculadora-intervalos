@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Menu.module.css';
 import { startAudioContext } from '../services/audioService';
-import type { GameMode, GameSpeed } from '../types'; // MUDANÇA: Importa de '../types'
+import type { GameMode, GameSpeed } from '../types';
 
 interface MenuProps {
   onStartGame: (gameMode: GameMode) => void;
@@ -15,17 +15,19 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady, gameSpeed, onSpeedChange }) => {
+  
   const handleModeSelection = async (gameMode: GameMode) => {
     if (!isAudioReady) return;
     try {
       await startAudioContext();
       onStartGame(gameMode);
-    } catch (e) {
+    } catch (e) { // A chave '{' que estava faltando foi adicionada aqui
       console.error("Erro ao iniciar o áudio.", e);
       onStartGame(gameMode);
     }
   };
 
+  // O 'return' com o JSX estava faltando
   return (
     <div className={styles.menuContainer}>
       <h1 className={styles.title}>Desafio Musical</h1>
@@ -62,6 +64,19 @@ const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady, game
         <Link to="/ouvido-absoluto" className={`${styles.btn} ${styles.btnAbsolutePitch}`}>
           Treino de Ouvido Absoluto
         </Link>
+        <button className={`${styles.btn} ${styles.btnRiff}`} onClick={() => handleModeSelection('riff')} disabled={!isAudioReady}>
+          Qual é o Riff?
+        </button>
+        <hr className={styles.separator} />
+        <button className={`${styles.btn} ${styles.btnScaleEasy}`} onClick={() => handleModeSelection('scaleEasy')} disabled={!isAudioReady}>
+          Identifique a Escala (Fácil)
+        </button>
+        <button className={`${styles.btn} ${styles.btnScaleMedium}`} onClick={() => handleModeSelection('scaleMedium')} disabled={!isAudioReady}>
+          Identifique a Escala (Médio)
+        </button>
+        <button className={`${styles.btn} ${styles.btnScaleHard}`} onClick={() => handleModeSelection('scaleHard')} disabled={!isAudioReady}>
+          Identifique a Escala (Difícil)
+        </button>
       </div>
     </div>
   );

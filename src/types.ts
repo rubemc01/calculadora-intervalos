@@ -4,15 +4,16 @@ export type GameMode =
   | 'interval'
   | 'nomenclature'
   | 'chordCipher'
+  | 'riff'
   | 'earTrainingEasy' | 'earTrainingMedium' | 'earTrainingHard'
   | 'chordEasy' | 'chordMedium' | 'chordHard'
   | 'absolutePitch_L1' | 'absolutePitch_L2' | 'absolutePitch_L3' | 'absolutePitch_L4' | 'absolutePitch_L5'
-  | 'riff';
+  | 'scaleEasy' | 'scaleMedium' | 'scaleHard';
 
 export type GameSpeed = 'beginner' | 'normal' | 'fast';
 
 export interface Question {
-  type: 'interval' | 'nomenclature' | 'earTraining' | 'chord' | 'absolutePitch' | 'chordCipher' | 'riff';
+  type: 'interval' | 'nomenclature' | 'earTraining' | 'chord' | 'absolutePitch' | 'chordCipher' | 'riff' | 'scale';
   questionText: string;
   questionAudio: {
     startNote: string;

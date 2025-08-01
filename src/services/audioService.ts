@@ -48,14 +48,37 @@ export const playChord = async (notes: string[]) => {
   pianoSampler.triggerAttackRelease(notesWithOctave, 1.2, Tone.now());
 };
 
-// MUDANÇA AQUI: O tipo do parâmetro 'note' agora é 'string | string[]'
-export const playRiff = async (sequence: { time: string, note: string | string[], duration: string }[]) => {
+export const playScale = async (notes: string[]) => {
+  await startAudioContext();
+  const now = Tone.now();
+  notes.forEach((note, index) => {
+    const noteWithOctave = getToneNote(note);
+    pianoSampler.triggerAttackRelease(noteWithOctave, "8n", now + index * 0.3);
+  });
+};
+
+// --- FUNÇÃO MODIFICADA ---
+export const playRiff = async (sequence: { time: string, note: string | string[], duration: string }[], gameSpeed: GameSpeed) => {
   await startAudioContext();
   
+  // 1. Define o BPM (tempo) da música com base na velocidade do jogo
+  switch(gameSpeed) {
+    case 'beginner':
+      Tone.Transport.bpm.value = 85;
+      break;
+    case 'fast':
+      Tone.Transport.bpm.value = 120;
+      break;
+    case 'normal':
+    default:
+      Tone.Transport.bpm.value = 100;
+      break;
+  }
+
+  // Para qualquer Part que esteja tocando antes
   Tone.Transport.cancel();
   
   const part = new Part((time, value) => {
-    // A biblioteca Tone.js já sabe lidar com 'value.note' sendo string ou array de strings
     pianoSampler.triggerAttackRelease(value.note, value.duration, time);
   }, sequence).start(0);
 

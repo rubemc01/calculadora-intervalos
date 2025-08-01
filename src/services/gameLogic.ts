@@ -2,12 +2,7 @@
 
 import { musicData, orderedNotes, intervals } from '../data/musicData';
 import { riffsData } from '../data/riffsData';
-import type { Question } from '../types'; // MUDANÇA: Importa a Question do lugar certo
-
-// --- (O resto completo do seu arquivo gameLogic.ts vai aqui) ---
-// (Certifique-se de que todo o restante do arquivo, com todas as funções
-// como generateIntervalQuestion, generateRiffQuestion, etc., esteja presente)
-
+import type { Question } from '../types';
 
 // --- SEÇÃO DE DADOS E FUNÇÕES AUXILIARES ---
 const nomenclaturasBasicas: { [key: string]: string } = { 'C': 'Dó', 'D': 'Ré', 'E': 'Mi', 'F': 'Fá', 'G': 'Sol', 'A': 'Lá', 'B': 'Si' };
@@ -16,7 +11,12 @@ const todosOsSolfejos = Object.values(solfejoCompleto);
 const cifrasBasicas = Object.keys(nomenclaturasBasicas);
 const solfejoBasico = Object.values(nomenclaturasBasicas);
 const chromaticScale: string[] = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
-const noteToIndex = new Map(chromaticScale.map((note, i) => [note, i]));
+
+const noteToIndex = new Map([
+  ...chromaticScale.map((note, i): [string, number] => [note, i]),
+  ['D♭', 1], ['E♭', 3], ['G♭', 6], ['A♭', 8], ['B♭', 10]
+]);
+
 const chordFormulas: { [key: string]: number[] } = { 'Maior': [0, 4, 7], 'menor': [0, 3, 7], 'diminuto': [0, 3, 6], 'aumentado': [0, 4, 8] };
 const shuffleArray = (array: any[]) => [...array].sort(() => Math.random() - 0.5);
 
@@ -32,10 +32,26 @@ const chordCiphers: { [key: string]: string } = {
 const allChordCiphers = Object.keys(chordCiphers);
 const allChordNames = Object.values(chordCiphers);
 
+const scaleFormulas: { [key: string]: number[] } = {
+  'Maior': [0, 2, 4, 5, 7, 9, 11],
+  'Menor Natural': [0, 2, 3, 5, 7, 8, 10],
+  'Menor Harmônica': [0, 2, 3, 5, 7, 8, 11],
+  'Menor Melódica': [0, 2, 3, 5, 7, 9, 11],
+  'Pentatônica Maior': [0, 2, 4, 7, 9],
+  'Blues': [0, 3, 5, 6, 7, 10],
+};
+
 const buildChord = (root: string, type: string): string[] => {
   const rootIndex = noteToIndex.get(root)!;
   const formula = chordFormulas[type];
   return formula.map(interval => chromaticScale[(rootIndex + interval) % 12]);
+};
+
+const buildScale = (root: string, type: string): string[] => {
+  const rootIndex = noteToIndex.get(root)!;
+  const formula = scaleFormulas[type];
+  const scaleNotes = formula.map(interval => chromaticScale[(rootIndex + interval) % 12]);
+  return [...scaleNotes, chromaticScale[rootIndex]];
 };
 
 // --- FUNÇÕES GERADORAS DE PERGUNTAS ---
@@ -199,26 +215,19 @@ export const generateAbsolutePitchQuestion = (level: number): Question => {
   };
 };
 
-// --- FUNÇÃO MODIFICADA ---
 export const generateRiffQuestion = (excludeIds: number[] = []): Question => {
-  // Filtra riffs com apenas uma nota E riffs que já foram tocados
   let availableRiffs = riffsData.filter(
     riff => riff.sequence.length > 1 && !excludeIds.includes(riff.id)
   );
-
-  // Se todos os riffs válidos já foram tocados, reseta a lista
   if (availableRiffs.length === 0) {
     availableRiffs = riffsData.filter(riff => riff.sequence.length > 1);
-    // Retorna um objeto especial ou lida com o reset no GameScreen
   }
-
   const randomRiff = availableRiffs[Math.floor(Math.random() * availableRiffs.length)];
   const correctAnswer = `${randomRiff.songTitle} - ${randomRiff.artist}`;
   const options = shuffleArray([correctAnswer, ...randomRiff.options]);
-
   return {
     type: 'riff',
-    questionId: randomRiff.id, // Adiciona o ID do riff à pergunta
+    questionId: randomRiff.id,
     questionText: 'Qual é o Riff?',
     questionAudio: {
       startNote: '',
@@ -226,6 +235,50 @@ export const generateRiffQuestion = (excludeIds: number[] = []): Question => {
       notes: [],
       sequence: randomRiff.sequence,
     },
+    options,
+    correctAnswer,
+  };
+};
+
+export const generateScaleQuestion = (difficulty: 'easy' | 'medium' | 'hard'): Question => {
+  let rootPool: string[] = ['C', 'G', 'D', 'A', 'E', 'F', 'B♭'];
+  let typePool: string[];
+
+  switch (difficulty) {
+    case 'medium':
+      typePool = ['Maior', 'Menor Natural', 'Pentatônica Maior', 'Blues'];
+      break;
+    case 'hard':
+      typePool = ['Menor Natural', 'Menor Harmônica', 'Menor Melódica'];
+      break;
+    case 'easy':
+    default:
+      typePool = ['Maior', 'Menor Natural'];
+      break;
+  }
+  
+  const randomRoot = rootPool[Math.floor(Math.random() * rootPool.length)];
+  const randomType = typePool[Math.floor(Math.random() * typePool.length)];
+
+  const scaleNotes = buildScale(randomRoot, randomType);
+  const correctAnswer = `${solfejoCompleto[randomRoot]} ${randomType}`;
+
+  const wrongAnswers: Set<string> = new Set();
+  while(wrongAnswers.size < 3) {
+    const wrongRoot = rootPool[Math.floor(Math.random() * rootPool.length)];
+    const wrongType = typePool[Math.floor(Math.random() * typePool.length)];
+    const wrongAnswer = `${solfejoCompleto[wrongRoot]} ${wrongType}`;
+    if(wrongAnswer !== correctAnswer) {
+      wrongAnswers.add(wrongAnswer);
+    }
+  }
+
+  const options = shuffleArray([correctAnswer, ...Array.from(wrongAnswers)]);
+
+  return {
+    type: 'scale',
+    questionText: 'Que escala é esta?',
+    questionAudio: { startNote: '', endNote: null, notes: scaleNotes },
     options,
     correctAnswer,
   };

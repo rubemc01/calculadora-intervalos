@@ -1,6 +1,6 @@
 // src/game/GameScreen.tsx
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'; // CORREÇÃO: Adicionado 'useMemo'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'; // Importa o useMemo
 import { useParams } from 'react-router-dom';
 import styles from './GameScreen.module.css';
 import { 
@@ -10,10 +10,12 @@ import {
   generateChordQuestion, 
   generateAbsolutePitchQuestion,
   generateChordCipherQuestion,
-  generateRiffQuestion
-} from '../services/gameLogic'; // CORREÇÃO: Caminho do import corrigido
-import { playInterval, playNote, playChord, playRiff } from '../services/audioService';
+  generateRiffQuestion,
+  generateScaleQuestion
+} from '../services/gameLogic';
+import { playInterval, playNote, playChord, playRiff, playScale } from '../services/audioService';
 import type { GameMode, GameSpeed, Question } from '../types';
+import { riffsData } from '../data/riffsData';
 
 interface GameScreenProps {
   gameSpeed: GameSpeed;
@@ -24,6 +26,8 @@ interface GameScreenProps {
 const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturnToMenu }) => {
   const { gameMode } = useParams<{ gameMode: GameMode }>();
 
+  // CORREÇÃO: Usamos o useMemo para que este valor só seja recalculado quando 'gameSpeed' mudar.
+  // Isso quebra o loop infinito.
   const timePerQuestion = useMemo(() => {
     switch (gameSpeed) {
       case 'fast': return 12;
@@ -73,20 +77,25 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
         case 'interval': newQuestion = generateIntervalQuestion(); break;
         case 'nomenclature': newQuestion = generateNomenclatureQuestion(); break;
         case 'chordCipher': newQuestion = generateChordCipherQuestion(); break;
+        case 'riff': newQuestion = generateRiffQuestion(playedRiffIds); break;
         case 'earTrainingEasy': newQuestion = generateEarTrainingQuestion('easy'); break;
         case 'earTrainingMedium': newQuestion = generateEarTrainingQuestion('medium'); break;
         case 'earTrainingHard': newQuestion = generateEarTrainingQuestion('hard'); break;
         case 'chordEasy': newQuestion = generateChordQuestion('easy'); break;
         case 'chordMedium': newQuestion = generateChordQuestion('medium'); break;
         case 'chordHard': newQuestion = generateChordQuestion('hard'); break;
-        case 'riff': newQuestion = generateRiffQuestion(playedRiffIds); break;
+        case 'scaleEasy': newQuestion = generateScaleQuestion('easy'); break;
+        case 'scaleMedium': newQuestion = generateScaleQuestion('medium'); break;
+        case 'scaleHard': newQuestion = generateScaleQuestion('hard'); break;
         default: newQuestion = generateIntervalQuestion(); break;
       }
     }
     setQuestion(newQuestion);
 
     if (newQuestion.type === 'riff' && newQuestion.questionAudio.sequence) {
-      playRiff(newQuestion.questionAudio.sequence);
+      playRiff(newQuestion.questionAudio.sequence, gameSpeed);
+    } else if (newQuestion.type === 'scale') {
+      playScale(newQuestion.questionAudio.notes);
     } else if (newQuestion.type === 'interval') {
       playInterval(newQuestion.questionAudio.startNote, newQuestion.questionAudio.endNote, gameSpeed);
     } else if (newQuestion.type === 'chord' || newQuestion.type === 'chordCipher') {
@@ -115,7 +124,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
   useEffect(() => {
     if (!feedback) {
       timerRef.current = setInterval(() => {
-        // CORREÇÃO: Adicionado o tipo 'number' ao parâmetro 'prev'
         setTimeLeft((prev: number) => {
           if (prev <= 1) {
             clearTimer();
@@ -137,7 +145,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     if (!question) return;
     setReplayCount(prev => prev + 1);
     if (question.type === 'riff' && question.questionAudio.sequence) {
-        playRiff(question.questionAudio.sequence);
+        playRiff(question.questionAudio.sequence, gameSpeed);
+    } else if (question.type === 'scale') {
+      playScale(question.questionAudio.notes);
     } else if (question.type === 'interval') {
       playInterval(question.questionAudio.startNote, question.questionAudio.endNote, gameSpeed);
     } else if (question.type === 'chord' || question.type === 'chordCipher') {
