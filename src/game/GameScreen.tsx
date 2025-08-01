@@ -9,10 +9,11 @@ import {
   generateEarTrainingQuestion, 
   generateChordQuestion, 
   generateAbsolutePitchQuestion,
-  generateChordCipherQuestion
-} from '../services/gameLogic';
-import { playInterval, playNote, playChord } from '../services/audioService';
-import type { GameMode, GameSpeed, Question } from '../types';
+  generateChordCipherQuestion,
+  generateRiffQuestion
+} from '../services/gameLogic'; // A 'Question' NÃO é importada daqui
+import { playInterval, playNote, playChord, playRiff } from '../services/audioService';
+import type { GameMode, GameSpeed, Question } from '../types'; // A 'Question' É importada daqui
 
 interface GameScreenProps {
   gameSpeed: GameSpeed;
@@ -25,9 +26,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
 
   const getTimeForSpeed = (speed: GameSpeed) => {
     switch (speed) {
-      case 'fast': return 8;
-      case 'normal': return 15;
-      case 'beginner': default: return 25;
+      case 'fast': return 12;
+      case 'normal': return 20;
+      case 'beginner': default: return 30;
     }
   };
   const timePerQuestion = getTimeForSpeed(gameSpeed);
@@ -41,7 +42,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearTimer = useCallback(() => { if (timerRef.current) clearInterval(timerRef.current); }, []);
-
   const triggerGameOver = useCallback(() => {
     clearTimer();
     onGameOver(score);
@@ -61,7 +61,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     setTimeLeft(timePerQuestion);
     setSelectedAnswer(null);
     let newQuestion: Question;
-
     if (gameMode?.startsWith('absolutePitch_')) {
       const level = parseInt(gameMode.split('_L')[1], 10);
       newQuestion = generateAbsolutePitchQuestion(level);
@@ -76,12 +75,15 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
         case 'chordEasy': newQuestion = generateChordQuestion('easy'); break;
         case 'chordMedium': newQuestion = generateChordQuestion('medium'); break;
         case 'chordHard': newQuestion = generateChordQuestion('hard'); break;
+        case 'riff': newQuestion = generateRiffQuestion(); break;
         default: newQuestion = generateIntervalQuestion(); break;
       }
     }
     setQuestion(newQuestion);
 
-    if (newQuestion.type === 'interval') {
+    if (newQuestion.type === 'riff' && newQuestion.questionAudio.sequence) {
+      playRiff(newQuestion.questionAudio.sequence);
+    } else if (newQuestion.type === 'interval') {
       playInterval(newQuestion.questionAudio.startNote, newQuestion.questionAudio.endNote, gameSpeed);
     } else if (newQuestion.type === 'chord' || newQuestion.type === 'chordCipher') {
       playChord(newQuestion.questionAudio.notes);
@@ -126,7 +128,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
 
   const handleReplayAudio = () => {
     if (!question) return;
-    if (question.type === 'interval') {
+    if (question.type === 'riff' && question.questionAudio.sequence) {
+        playRiff(question.questionAudio.sequence);
+    } else if (question.type === 'interval') {
       playInterval(question.questionAudio.startNote, question.questionAudio.endNote, gameSpeed);
     } else if (question.type === 'chord' || question.type === 'chordCipher') {
       playChord(question.questionAudio.notes);

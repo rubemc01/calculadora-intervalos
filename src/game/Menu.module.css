@@ -77,3 +77,13 @@
 .speedSelector { display: flex; background-color: rgba(0, 0, 0, 0.4); border-radius: 25px; padding: 5px; margin-bottom: 30px; border: 1px solid rgba(255, 215, 0, 0.2); }
 .speedButton { background: transparent; border: none; color: #a0a0a0; padding: 10px 25px; font-size: 1rem; font-weight: bold; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; }
 .speedButton.active { background-color: #ffd700; color: #111; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+/* src/game/Menu.module.css */
+
+/* ... (todos os estilos existentes) ... */
+
+/* Adicione esta classe junto com as outras de botões */
+.btnRiff {
+  background-color: #333;
+  color: #ffc107;
+  border: 1px solid #ffc107;
+}

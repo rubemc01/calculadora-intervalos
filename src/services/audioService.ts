@@ -1,61 +1,40 @@
 // src/services/audioService.ts
 
 import * as Tone from 'tone';
-import type { GameSpeed } from '../types'; // MUDANÇA: Importa de '../types'
+import { Part } from 'tone';
+import type { GameSpeed } from '../types';
 
 const pianoSampler = new Tone.Sampler({
-  urls: {
-    A0: "A0.mp3", C1: "C1.mp3", "D#1": "Ds1.mp3", "F#1": "Fs1.mp3", A1: "A1.mp3", C2: "C2.mp3", "D#2": "Ds2.mp3", "F#2": "Fs2.mp3", A2: "A2.mp3", C3: "C3.mp3", "D#3": "Ds3.mp3", "F#3": "Fs3.mp3", A3: "A3.mp3", C4: "C4.mp3", "D#4": "Ds4.mp3", "F#4": "Fs4.mp3", A4: "A4.mp3", C5: "C5.mp3", "D#5": "Ds5.mp3", "F#5": "Fs5.mp3", A5: "A5.mp3", C6: "C6.mp3", "D#6": "Ds6.mp3", "F#6": "Fs6.mp3", A6: "A6.mp3", C7: "C7.mp3", "D#7": "Ds7.mp3", "F#7": "Fs7.mp3", A7: "A7.mp3", C8: "C8.mp3"
-  },
+  urls: { A0: "A0.mp3", C1: "C1.mp3", "D#1": "Ds1.mp3", "F#1": "Fs1.mp3", A1: "A1.mp3", C2: "C2.mp3", "D#2": "Ds2.mp3", "F#2": "Fs2.mp3", A2: "A2.mp3", C3: "C3.mp3", "D#3": "Ds3.mp3", "F#3": "Fs3.mp3", A3: "A3.mp3", C4: "C4.mp3", "D#4": "Ds4.mp3", "F#4": "Fs4.mp3", A4: "A4.mp3", C5: "C5.mp3", "D#5": "Ds5.mp3", "F#5": "Fs5.mp3", A5: "A5.mp3", C6: "C6.mp3", "D#6": "Ds6.mp3", "F#6": "Fs6.mp3", A6: "A6.mp3", C7: "C7.mp3", "D#7": "Ds7.mp3", "F#7": "Fs7.mp3", A7: "A7.mp3", C8: "C8.mp3" },
   baseUrl: "https://tonejs.github.io/audio/salamander/",
-  onload: () => {
-    console.log('Piano carregado com sucesso!');
-  }
+  onload: () => { console.log('Piano carregado com sucesso!'); }
 }).toDestination();
 
 export const isPianoReady = () => pianoSampler.loaded;
 
 export const startAudioContext = async () => {
-  if (Tone.context.state !== 'running') {
-    await Tone.start();
-  }
+  if (Tone.context.state !== 'running') { await Tone.start(); }
 };
 
 const getToneNote = (note: string) => {
   let cleanNote = note.split(' ')[0].replace('♯', '#').replace('♭', 'b');
-  if (/\d/.test(cleanNote)) {
-    return cleanNote;
-  } else {
-    return `${cleanNote}4`;
-  }
+  if (/\d/.test(cleanNote)) { return cleanNote; } 
+  else { return `${cleanNote}4`; }
 };
 
 export const playNote = async (note: string) => {
   await startAudioContext();
-  const now = Tone.now();
-  pianoSampler.triggerAttackRelease(getToneNote(note), 1.2, now);
+  pianoSampler.triggerAttackRelease(getToneNote(note), 1.2, Tone.now());
 };
 
 export const playInterval = async (startNote: string, endNote: string | null, gameSpeed: GameSpeed) => {
   await startAudioContext();
-  
-  let duration = 0.5;
-  let spacing = 0.6;
-
+  let duration = 0.5, spacing = 0.6;
   switch(gameSpeed) {
-    case 'beginner':
-      duration = 0.8;
-      spacing = 0.9;
-      break;
-    case 'fast':
-      duration = 0.3;
-      spacing = 0.4;
-      break;
-    case 'normal':
-    default:
-      break;
+    case 'beginner': duration = 0.8; spacing = 0.9; break;
+    case 'fast': duration = 0.3; spacing = 0.4; break;
+    case 'normal': default: break;
   }
-
   const now = Tone.now();
   pianoSampler.triggerAttackRelease(getToneNote(startNote), duration, now);
   if (endNote) {
@@ -65,7 +44,25 @@ export const playInterval = async (startNote: string, endNote: string | null, ga
 
 export const playChord = async (notes: string[]) => {
   await startAudioContext();
-  const now = Tone.now();
   const notesWithOctave = notes.map(getToneNote);
-  pianoSampler.triggerAttackRelease(notesWithOctave, 1.2, now);
+  pianoSampler.triggerAttackRelease(notesWithOctave, 1.2, Tone.now());
+};
+
+// MUDANÇA AQUI: O tipo do parâmetro 'note' agora é 'string | string[]'
+export const playRiff = async (sequence: { time: string, note: string | string[], duration: string }[]) => {
+  await startAudioContext();
+  
+  Tone.Transport.cancel();
+  
+  const part = new Part((time, value) => {
+    // A biblioteca Tone.js já sabe lidar com 'value.note' sendo string ou array de strings
+    pianoSampler.triggerAttackRelease(value.note, value.duration, time);
+  }, sequence).start(0);
+
+  if (Tone.Transport.state !== 'started') {
+    Tone.Transport.start();
+  } else {
+    Tone.Transport.stop();
+    Tone.Transport.start();
+  }
 };

@@ -1,6 +1,7 @@
 // src/services/gameLogic.ts
 
 import { musicData, orderedNotes, intervals } from '../data/musicData';
+import { riffsData } from '../data/riffsData';
 import type { Question } from '../types';
 
 // --- SEÇÃO DE DADOS E FUNÇÕES AUXILIARES ---
@@ -188,6 +189,24 @@ export const generateAbsolutePitchQuestion = (level: number): Question => {
     type: 'absolutePitch',
     questionText,
     questionAudio: { startNote: correctNote, endNote: null, notes: [] },
+    options,
+    correctAnswer,
+  };
+};
+
+export const generateRiffQuestion = (): Question => {
+  const randomRiff = riffsData[Math.floor(Math.random() * riffsData.length)];
+  const correctAnswer = `${randomRiff.songTitle} - ${randomRiff.artist}`;
+  const options = shuffleArray([correctAnswer, ...randomRiff.options]);
+  return {
+    type: 'riff',
+    questionText: 'Qual é o Riff?',
+    questionAudio: {
+      startNote: '',
+      endNote: null,
+      notes: [],
+      sequence: randomRiff.sequence,
+    },
     options,
     correctAnswer,
   };
