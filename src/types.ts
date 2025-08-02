@@ -8,12 +8,14 @@ export type GameMode =
   | 'earTrainingEasy' | 'earTrainingMedium' | 'earTrainingHard'
   | 'chordEasy' | 'chordMedium' | 'chordHard'
   | 'absolutePitch_L1' | 'absolutePitch_L2' | 'absolutePitch_L3' | 'absolutePitch_L4' | 'absolutePitch_L5'
-  | 'scaleEasy' | 'scaleMedium' | 'scaleHard';
+  | 'scaleEasy' | 'scaleMedium' | 'scaleHard'
+  | 'chordQualityEasy' | 'chordQualityMedium'
+  | 'scaleQualityEasy' | 'scaleQualityMedium' | 'scaleQualityHard';
 
 export type GameSpeed = 'beginner' | 'normal' | 'fast';
 
 export interface Question {
-  type: 'interval' | 'nomenclature' | 'earTraining' | 'chord' | 'absolutePitch' | 'chordCipher' | 'riff' | 'scale';
+  type: GameMode | 'earTraining' | 'absolutePitch' | 'scale' | 'chord';
   questionText: string;
   questionAudio: {
     startNote: string;

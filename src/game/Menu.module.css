@@ -43,8 +43,8 @@
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   color: white;
-  text-decoration: none; /* Garante que o Link pareça um botão */
-  display: block; /* Garante que o Link se comporte como um botão */
+  text-decoration: none;
+  display: block;
 }
 
 .btn:hover {
@@ -59,7 +59,7 @@
   margin: 10px auto;
 }
 
-/* Estilos de botões */
+/* --- Estilos de botões por modo --- */
 .btnTool { background-color: #fd7e14; border: 2px solid #ffc107; }
 .btnInterval { background-color: #28a745; }
 .btnNomenclature { background-color: #007bff; }
@@ -73,13 +73,56 @@
 .btnScaleEasy { background-color: #03a9f4; }
 .btnScaleMedium { background-color: #ff9800; }
 .btnScaleHard { background-color: #f44336; }
+.btnQuality { background-color: #ffffff; color: #343a40; border: 1px solid #343a40; }
 .btnAbsolutePitch { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border: 1px solid white; }
 .btnRiff { background-color: #333; color: #ffc107; border: 1px solid #ffc107; }
 
-/* Estilos de Carregamento e Velocidade */
-.loadingText { font-size: 1.2rem; color: #ffd700; margin-bottom: 40px; animation: pulse 2s infinite ease-in-out; }
-.btn:disabled { background-color: #6c757d; color: #c0c0c0; cursor: not-allowed; transform: none; box-shadow: none; border: none; }
-@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-.speedSelector { display: flex; background-color: rgba(0, 0, 0, 0.4); border-radius: 25px; padding: 5px; margin-bottom: 30px; border: 1px solid rgba(255, 215, 0, 0.2); }
-.speedButton { background: transparent; border: none; color: #a0a0a0; padding: 10px 25px; font-size: 1rem; font-weight: bold; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; }
-.speedButton.active { background-color: #ffd700; color: #111; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+/* --- Estilos de Carregamento e Velocidade --- */
+.loadingText { 
+  font-size: 1.2rem; 
+  color: #ffd700; 
+  margin-bottom: 40px; 
+  animation: pulse 2s infinite ease-in-out; 
+}
+
+.btn:disabled { 
+  background-color: #6c757d; 
+  color: #c0c0c0; 
+  cursor: not-allowed; 
+  transform: none; 
+  box-shadow: none; 
+  border: none; 
+}
+
+@keyframes pulse { 
+  0% { opacity: 0.5; } 
+  50% { opacity: 1; } 
+  100% { opacity: 0.5; } 
+}
+
+.speedSelector { 
+  display: flex; 
+  background-color: rgba(0, 0, 0, 0.4); 
+  border-radius: 25px; 
+  padding: 5px; 
+  margin-bottom: 30px; 
+  border: 1px solid rgba(255, 215, 0, 0.2); 
+}
+
+.speedButton { 
+  background: transparent; 
+  border: none; 
+  color: #a0a0a0; 
+  padding: 10px 25px; 
+  font-size: 1rem; 
+  font-weight: bold; 
+  border-radius: 20px; 
+  cursor: pointer; 
+  transition: all 0.3s ease; 
+}
+
+.speedButton.active { 
+  background-color: #ffd700; 
+  color: #111; 
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); 
+}

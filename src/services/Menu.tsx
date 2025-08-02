@@ -15,19 +15,17 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady, gameSpeed, onSpeedChange }) => {
-  
   const handleModeSelection = async (gameMode: GameMode) => {
     if (!isAudioReady) return;
     try {
       await startAudioContext();
       onStartGame(gameMode);
-    } catch (e) { // A chave '{' que estava faltando foi adicionada aqui
+    } catch (e) {
       console.error("Erro ao iniciar o áudio.", e);
       onStartGame(gameMode);
     }
   };
 
-  // O 'return' com o JSX estava faltando
   return (
     <div className={styles.menuContainer}>
       <h1 className={styles.title}>Desafio Musical</h1>
@@ -61,13 +59,6 @@ const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady, game
         <button className={`${styles.btn} ${styles.btnChordMedium}`} onClick={() => handleModeSelection('chordMedium')} disabled={!isAudioReady}>Adivinhe o Acorde (Médio)</button>
         <button className={`${styles.btn} ${styles.btnChordHard}`} onClick={() => handleModeSelection('chordHard')} disabled={!isAudioReady}>Adivinhe o Acorde (Difícil)</button>
         <hr className={styles.separator} />
-        <Link to="/ouvido-absoluto" className={`${styles.btn} ${styles.btnAbsolutePitch}`}>
-          Treino de Ouvido Absoluto
-        </Link>
-        <button className={`${styles.btn} ${styles.btnRiff}`} onClick={() => handleModeSelection('riff')} disabled={!isAudioReady}>
-          Qual é o Riff?
-        </button>
-        <hr className={styles.separator} />
         <button className={`${styles.btn} ${styles.btnScaleEasy}`} onClick={() => handleModeSelection('scaleEasy')} disabled={!isAudioReady}>
           Identifique a Escala (Fácil)
         </button>
@@ -76,6 +67,29 @@ const Menu: React.FC<MenuProps> = ({ onStartGame, onShowTool, isAudioReady, game
         </button>
         <button className={`${styles.btn} ${styles.btnScaleHard}`} onClick={() => handleModeSelection('scaleHard')} disabled={!isAudioReady}>
           Identifique a Escala (Difícil)
+        </button>
+        <hr className={styles.separator} />
+         <button className={`${styles.btn} ${styles.btnQuality}`} onClick={() => handleModeSelection('scaleQualityEasy')}>
+         Qualidade da Escala (Fácil)
+         </button>
+         <button className={`${styles.btn} ${styles.btnQuality}`} onClick={() => handleModeSelection('scaleQualityMedium')}>
+         Qualidade da Escala (Médio)
+         </button>
+         <button className={`${styles.btn} ${styles.btnQuality}`} onClick={() => handleModeSelection('scaleQualityHard')}>
+         Qualidade da Escala (Difícil)
+         </button>
+         <button className={`${styles.btn} ${styles.btnQuality}`} onClick={() => handleModeSelection('chordQualityEasy')}>
+         Qualidade do Acorde (Fácil)
+         </button>
+         <button className={`${styles.btn} ${styles.btnQuality}`} onClick={() => handleModeSelection('chordQualityMedium')}>
+         Qualidade do Acorde (Médio)
+         </button>
+        <hr className={styles.separator} />
+        <Link to="/ouvido-absoluto" className={`${styles.btn} ${styles.btnAbsolutePitch}`}>
+          Treino de Ouvido Absoluto
+        </Link>
+        <button className={`${styles.btn} ${styles.btnRiff}`} onClick={() => handleModeSelection('riff')} disabled={!isAudioReady}>
+          Qual é o Riff?
         </button>
       </div>
     </div>

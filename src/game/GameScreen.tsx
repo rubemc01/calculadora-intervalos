@@ -1,6 +1,6 @@
 // src/game/GameScreen.tsx
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'; // Importa o useMemo
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './GameScreen.module.css';
 import { 
@@ -11,7 +11,9 @@ import {
   generateAbsolutePitchQuestion,
   generateChordCipherQuestion,
   generateRiffQuestion,
-  generateScaleQuestion
+  generateScaleQuestion,
+  generateChordQualityQuestion,
+  generateScaleQualityQuestion
 } from '../services/gameLogic';
 import { playInterval, playNote, playChord, playRiff, playScale } from '../services/audioService';
 import type { GameMode, GameSpeed, Question } from '../types';
@@ -26,8 +28,6 @@ interface GameScreenProps {
 const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturnToMenu }) => {
   const { gameMode } = useParams<{ gameMode: GameMode }>();
 
-  // CORREÇÃO: Usamos o useMemo para que este valor só seja recalculado quando 'gameSpeed' mudar.
-  // Isso quebra o loop infinito.
   const timePerQuestion = useMemo(() => {
     switch (gameSpeed) {
       case 'fast': return 12;
@@ -87,10 +87,24 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
         case 'scaleEasy': newQuestion = generateScaleQuestion('easy'); break;
         case 'scaleMedium': newQuestion = generateScaleQuestion('medium'); break;
         case 'scaleHard': newQuestion = generateScaleQuestion('hard'); break;
+        case 'scaleQualityEasy': newQuestion = generateScaleQualityQuestion('easy'); break;
+        case 'scaleQualityMedium': newQuestion = generateScaleQualityQuestion('medium'); break;
+        case 'scaleQualityHard': newQuestion = generateScaleQualityQuestion('hard'); break;
+        case 'chordQualityEasy': newQuestion = generateChordQualityQuestion('easy'); break;
+        case 'chordQualityMedium': newQuestion = generateChordQualityQuestion('medium'); break;
         default: newQuestion = generateIntervalQuestion(); break;
       }
     }
     setQuestion(newQuestion);
+
+    if (newQuestion.type === 'riff' && newQuestion.questionId) {
+      const totalRiffsAvailable = riffsData.filter(r => r.sequence.length > 1).length;
+      if (playedRiffIds.length + 1 >= totalRiffsAvailable) {
+        setPlayedRiffIds([]);
+      } else {
+        setPlayedRiffIds(prevIds => [...prevIds, newQuestion.questionId!]);
+      }
+    }
 
     if (newQuestion.type === 'riff' && newQuestion.questionAudio.sequence) {
       playRiff(newQuestion.questionAudio.sequence, gameSpeed);
