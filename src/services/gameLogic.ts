@@ -30,7 +30,7 @@ const scaleFormulas: { [key: string]: number[] } = {
   'Menor Harmônica': [0, 2, 3, 5, 7, 8, 11],
   'Menor Melódica': [0, 2, 3, 5, 7, 9, 11],
   'Pentatônica Maior': [0, 2, 4, 7, 9],
-  'Blues': [0, 3, 5, 6, 7, 10],
+  'PentaBlues': [0, 3, 5, 6, 7, 10],
 };
 
 const shuffleArray = (array: any[]) => [...array].sort(() => Math.random() - 0.5);

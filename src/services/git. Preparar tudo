@@ -1,0 +1,8 @@
+# 1. Preparar tudo
+git add .
+
+# 2. Salvar com uma mensagem descritiva
+git commit -m "Sua mensagem aqui"
+
+# 3. Enviar para o GitHub (e acionar a Vercel)
+git push
