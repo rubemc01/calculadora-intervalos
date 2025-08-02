@@ -61,7 +61,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     setLives(prev => prev - 1);
   }, [clearTimer]);
 
-  const nextQuestion = useCallback(() => {
+  const nextQuestion = useCallback((currentPlayedRiffs: number[]) => {
     clearTimer();
     setFeedback('');
     setTimeLeft(timePerQuestion);
@@ -77,7 +77,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
         case 'interval': newQuestion = generateIntervalQuestion(); break;
         case 'nomenclature': newQuestion = generateNomenclatureQuestion(); break;
         case 'chordCipher': newQuestion = generateChordCipherQuestion(); break;
-        case 'riff': newQuestion = generateRiffQuestion(playedRiffIds); break;
+        case 'riff': 
+          newQuestion = generateRiffQuestion(currentPlayedRiffs); 
+          break;
         case 'earTrainingEasy': newQuestion = generateEarTrainingQuestion('easy'); break;
         case 'earTrainingMedium': newQuestion = generateEarTrainingQuestion('medium'); break;
         case 'earTrainingHard': newQuestion = generateEarTrainingQuestion('hard'); break;
@@ -97,15 +99,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     }
     setQuestion(newQuestion);
 
-    if (newQuestion.type === 'riff' && newQuestion.questionId) {
-      const totalRiffsAvailable = riffsData.filter(r => r.sequence.length > 1).length;
-      if (playedRiffIds.length + 1 >= totalRiffsAvailable) {
-        setPlayedRiffIds([]);
-      } else {
-        setPlayedRiffIds(prevIds => [...prevIds, newQuestion.questionId!]);
-      }
-    }
-
     if (newQuestion.type === 'riff' && newQuestion.questionAudio.sequence) {
       playRiff(newQuestion.questionAudio.sequence, gameSpeed);
     } else if (newQuestion.type === 'scale') {
@@ -117,13 +110,26 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     } else if (newQuestion.type !== 'nomenclature') {
       playNote(newQuestion.questionAudio.startNote);
     }
-  }, [gameMode, clearTimer, timePerQuestion, gameSpeed, playedRiffIds]);
+  }, [gameMode, timePerQuestion, gameSpeed]);
 
   const handleAnswer = useCallback((answer: string) => {
     if (feedback) return;
     clearTimer();
     setSelectedAnswer(answer);
     const isCorrect = answer === question?.correctAnswer;
+
+    let nextPlayedRiffs = playedRiffIds;
+    if(question?.type === 'riff' && question.questionId) {
+      const totalRiffsAvailable = riffsData.filter(r => r.sequence.length > 1).length;
+      const updatedIds = [...playedRiffIds, question.questionId];
+      if (updatedIds.length >= totalRiffsAvailable) {
+        nextPlayedRiffs = [];
+      } else {
+        nextPlayedRiffs = updatedIds;
+      }
+      setPlayedRiffIds(nextPlayedRiffs);
+    }
+    
     if (isCorrect) {
       const penalty = replayCount * 5;
       const pointsWon = Math.max(0, 10 + timeLeft - penalty);
@@ -132,8 +138,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     } else {
       handleWrongAnswer();
     }
-    setTimeout(() => { if (isCorrect || lives > 1) nextQuestion(); }, 1500);
-  }, [feedback, question, timeLeft, lives, replayCount, clearTimer, handleWrongAnswer, nextQuestion]);
+
+    setTimeout(() => { 
+      if (isCorrect || lives > 1) {
+        nextQuestion(nextPlayedRiffs);
+      }
+    }, 1500);
+  }, [feedback, question, timeLeft, lives, replayCount, clearTimer, handleWrongAnswer, nextQuestion, playedRiffIds]);
 
   useEffect(() => {
     if (!feedback) {
@@ -151,7 +162,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameSpeed, onGameOver, onReturn
     return clearTimer;
   }, [feedback, handleWrongAnswer, clearTimer]);
 
-  useEffect(() => { nextQuestion(); }, [nextQuestion]);
+  useEffect(() => {
+    setPlayedRiffIds([]);
+    nextQuestion([]);
+  }, [nextQuestion, gameMode]);
 
   if (!question) return <div>Carregando...</div>;
 
